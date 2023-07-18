@@ -11,18 +11,28 @@
         <form method="post" action='https://register-demo.freecodecamp.org'>
             <!-- The "action" attribute can have various values depending on your application's requirements. 
             It can be an absolute URL, a relative URL, or even a server-side script or program that processes the form data. -->
+
+            <!-- The "method" attribute in the <form> element specifies the HTTP method to be used when submitting the form, 
+            such as "GET" or "POST". The form data is included in the request according to the method specified. -->
             <fieldset>
                 <label for="first-name">Enter Your First Name: <input type="text" id="first-name" required></label>
                 <label for="last-name">Enter Your Last Name: <input type="text" id="last-name" required></label>
                 <label for="email">Enter Your Email: <input type="email" id="email" required></label>
                 <label for="new-password">Create a New Password: <input type="text" id="new-password" required></label>
-                <label for="confirm-password">Confirm New Password: <input type="password" id="confirm-password" minlength="8" pattern="[a-z0-5]{8,}" required></label>
-                <label for="username">Create Username: <input type="password" id="username" minlength="8" pattern="[a-z0-5]{8,}" required></label>                
+                <label for="confirm-password">Confirm New Password: <input type="password" id="confirm-password" pattern="[a-z0-9]{8,}" required></label>
+                <label for="username">Create Username: <input type="password" id="username" pattern="[a-z0-9]{8,}" required></label>                
                 <!-- When a label is associated with an input field, a user is able to click on the label to focus or activate the associated form element. -->
                 <!-- the type attribute tells the browser what kind of data it should expect -->
             </fieldset>
-            <fieldset></fieldset>
-            <fieldset></fieldset>
+            <fieldset>
+                <label for="personal-account"><input type="radio" name="account-type" id="personal-account"/> Personal Account</label>
+                <label for="business-account"><input type="radio" name="account-type" id="business-account"/> Business Account</label>
+                <label for="terms-and-conditions"><input type="checkbox" id="terms-and-conditions" required /> I accept the <a href="homePage.html">terms and conditions</a></label>
+            </fieldset>
+            <fieldset>
+                <label for="profile-photo">Upload a profile photo: <input type="file" id="profile-photo"></label>
+                <label for="bio">Bio: <br><textarea id="profile-photo"></textarea></label>
+            </fieldset>
             <input type="submit" value="Submit">
         </form>
       </body>
