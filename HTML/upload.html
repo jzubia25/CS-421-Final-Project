@@ -7,6 +7,11 @@
   </head>
   <body>
     <h1>Submit your artwork</h1>
+    <!--placeholder for image-->
+    <div>Preview:</div>
+    <div
+      style="background-color: rgb(202, 203, 203); width: 200px; height: 200px"
+    ></div>
     <form action="">
       <label for="title">Title</label>
       <input type="text" id="title" name="title" required />
@@ -14,14 +19,6 @@
       <label for="fileInput">Upload File</label>
       <input type="file" id="fileInput" name="fileInput" required />
       <br />
-      <div>Preview:</div>
-      <div
-        style="
-          background-color: rgb(202, 203, 203);
-          width: 200px;
-          height: 200px;
-        "
-      ></div>
       <label for="description">Artwork Description</label>
       <br />
       <textarea
@@ -31,7 +28,7 @@
         cols="50"
       ></textarea>
       <br />
-      <input type="submit" value="Save as Draft" />
+      <input type="submit" value="Save Draft" />
       <input type="submit" value="Submit" />
     </form>
   </body>
