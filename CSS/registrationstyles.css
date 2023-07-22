@@ -2,10 +2,24 @@ body {
     width: 100%;
     height: 100vh;
     margin: 0;
+    background-image: url(478513-abstract-colorful-orange-blue-white-pink-red.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
     /* background-color: #f0f0f4;
     color: #070707; */
   }
 label {
     display: block;
     margin: 0.5rem 0;
+  }
+h1, p {
+    margin: 1em auto;
+    text-align: center;
+  }
+form {
+    margin: 0 auto;
+    max-width: 500px;
+    min-width: 300px;
+    width: 60vw;
+    background-color: rgb(218, 218, 223);
   }

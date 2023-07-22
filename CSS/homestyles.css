@@ -7,6 +7,7 @@
 }
 
 .title {
+    font-size: 60px;
     margin-bottom: 20px;
 }
 
@@ -14,4 +15,15 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
+    font-size: 60px;
+}
+
+body {
+    background-image: url(478513-abstract-colorful-orange-blue-white-pink-red.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.btn {
+    min-width: 200px;
 }
