@@ -108,7 +108,7 @@ def registrationPage ():
             return render_template ('registrationPage.html', form=form, error=error)
         
         userNameCheck = User.query.filter_by(userName=userName).first()
-        if userNameCheck: # If email already exists in database
+        if userNameCheck: # If username already exists in database
             error = "The username you entered is already taken."
             return render_template ('registrationPage.html', form=form, error=error)
 
@@ -127,6 +127,11 @@ def registrationPage ():
         return redirect(url_for('thankyou'))
     
     return render_template ('registrationPage.html', form=form)
+
+
+@app.route('/explore', methods = ['GET', 'POST'])
+def explore():
+    return render_template('explore.html')
 
 # @app.route('/secretPage')
 # def secretPage():
