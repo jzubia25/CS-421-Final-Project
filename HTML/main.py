@@ -115,7 +115,7 @@ def registrationPage ():
             error = "The email you entered is already taken."
             return render_template ('registrationPage.html', form=form, error=error)
         
-        userNameCheck = User.query.filter_by(userName=userName).first()
+        userNameCheck = User.query.filter_by(userName=userNameInput).first()
         if userNameCheck: # If email already exists in database
             error = "The username you entered is already taken."
             return render_template ('registrationPage.html', form=form, error=error)
