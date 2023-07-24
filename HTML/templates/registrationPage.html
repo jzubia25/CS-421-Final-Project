@@ -27,5 +27,10 @@
             <br>
             {{form.submit()}}
         </form>
+        {% if error %}
+        <p>{{ error }}</p>
+        {% endif %}
       </body>
 </html>
+
+<!-- Need to add the option for the user to add a profile photo -->

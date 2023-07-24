@@ -63,6 +63,14 @@ class User(db.Model):
     userName = db.Column(db.Text) #Newly added. Needs to be implemented
     password = db.Column(db.Text)
 
+# class Artwork(db.Model):
+#     id = db.Column(db.Integer, primary_key = True)
+#     title = db.Column(db.String(80), nullable = False)
+#     description = db.Column(db.String(120), nullable = False)
+#     price = db.Column(db.Float, nullable = False)
+#     status = db.Column(db.String(20), nullable = False)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+
 with app.app_context():
     # Create the tables (if not already created)
     db.create_all()
@@ -77,71 +85,68 @@ def index ():
 def loginPage ():
     form = LoginForm()
     if form.validate_on_submit():
-        userName = form.userName.data
-        password = form.password.data
+        userNameInput = form.userName.data
+        passwordInput = form.password.data
 
-        user = User.query.filter_by(userName=userName).first()
-        if user and user.password==password:
+        user = User.query.filter_by(userName=userNameInput).first()
+        if user and user.password==passwordInput:
             global success 
             success = True
-            return redirect(url_for('secretPage'))#Needs to be updated to User's home page
+            return redirect(url_for('profilePage'))#Needs to be updated to User's home page
         else:
             error = "Incorrect Login Info"
 
-    return render_template ('loginPage.html', form= form, error=error if 'error' in locals() else None)
+    return render_template ('loginPage.html', form=form, error=error if 'error' in locals() else None)
 
 @app.route('/registrationPage', methods = ['GET', 'POST'])
 def registrationPage ():
     form = RegistrationForm()
 
     if form.validate_on_submit():
-        firstName = form.firstName.data
-        lastName = form.lastName.data
-        email = form.email.data
-        password = form.password.data
-        confirmPassword = form.confirmPassword.data
-        userName = form.userName.data
+        firstNameInput = form.firstName.data
+        lastNameInput = form.lastName.data
+        emailInput = form.email.data
+        passwordInput = form.password.data
+        confirmPasswordInput = form.confirmPassword.data
+        userNameInput = form.userName.data
 
-        emailCheck = User.query.filter_by(email=email).first()
+        emailCheck = User.query.filter_by(email=emailInput).first()
         if emailCheck: # If email already exists in database
             error = "The email you entered is already taken."
             return render_template ('registrationPage.html', form=form, error=error)
         
-        userNameCheck = User.query.filter_by(userName=userName).first()
+        userNameCheck = User.query.filter_by(userName=userNameInput).first()
         if userNameCheck: # If email already exists in database
             error = "The username you entered is already taken."
             return render_template ('registrationPage.html', form=form, error=error)
 
-        if not passwordValidation(password):
+        if not passwordValidation(passwordInput):
             error = "Password must contain at least one capital letter, one lowercase letter, and end with a number."
             return render_template('registrationPage.html', form=form, error=error)
         
-        if password != confirmPassword:
+        if passwordInput != confirmPasswordInput:
             error = "Passwords do not match."
             return render_template('registrationPage.html', form=form, error=error)
 
-        newUser = User(firstName=firstName, lastName=lastName, username=email, password=password)
+        newUser = User(firstName=firstNameInput, lastName=lastNameInput, email=emailInput, userName=userNameInput, password=passwordInput)
 
         db.session.add(newUser)
         db.session.commit()
-        return redirect(url_for('thankyou'))
+        return redirect(url_for('loginPage'))
     
     return render_template ('registrationPage.html', form=form)
 
-# @app.route('/secretPage')
-# def secretPage():
-#     if success:
-#         return render_template ('secretPage.html')
-#     else:
-#         return redirect(url_for('error404'))
+@app.route('/profilePage')
+def profilePage():
+    if success:
+        return render_template ('profilePage.html')
+    else:
+        return redirect(url_for('error404'))
 
-# @app.route('/thankyou')
-# def thankyou():
-#     return render_template ('thankyou.html')
 
-# @app.route('/error404')
-# def error404():
-#     return render_template ('error404.html')
+@app.route('/error404')
+def error404():
+    return render_template ('error404.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

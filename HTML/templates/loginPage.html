@@ -16,5 +16,8 @@
             <br>
             {{form.submit()}}
         </form>
+        {% if error %}
+        <p>{{ error}}</p>
+        {% endif %}
       </body>
 </html>
