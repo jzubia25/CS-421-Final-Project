@@ -92,7 +92,7 @@ def loginPage ():
         if user and user.password==passwordInput:
             global success 
             success = True
-            return redirect(url_for('profilePage'))#Needs to be updated to User's home page
+            return redirect(url_for('userProfile'))#Needs to be updated to User's home page
         else:
             error = "Incorrect Login Info"
 
@@ -136,10 +136,17 @@ def registrationPage ():
     
     return render_template ('registrationPage.html', form=form)
 
-# @app.route('/secretPage')
-# def secretPage():
+@app.route('/userProfile')
+def userProfile():
+    if success:
+        return render_template ('userProfile.html')
+    else:
+        return redirect(url_for('error404'))
+    
+# @app.route('/profilePage')
+# def profilePage():
 #     if success:
-#         return render_template ('secretPage.html')
+#         return render_template ('profilePage.html')
 #     else:
 #         return redirect(url_for('error404'))
 
