@@ -6,14 +6,24 @@
         <link rel="stylesheet" href="../CSS/registrationstyles.css" />
     </head>
     <body>
-        <h1>New Account</h1>
-        <p></p>
-        <form method="post" action='https://register-demo.freecodecamp.org'>
+        <h1>Register New Account</h1>
+        <p>Create your acount. It's free and only takes a minute.</p>
+        <form method="POST">
             <!-- The "action" attribute can have various values depending on your application's requirements. 
             It can be an absolute URL, a relative URL, or even a server-side script or program that processes the form data. -->
 
             <!-- The "method" attribute in the <form> element specifies the HTTP method to be used when submitting the form, 
             such as "GET" or "POST". The form data is included in the request according to the method specified. -->
+            {{form.hidden_tag()}}
+            {{form.firstName(placeholder="First Name")}} {{form.lastName(placeholder="Last Name")}}
+            <br>
+            {{form.email(placeholder="Email Address", type="email")}}
+            <br>
+            {{form.password(placeholder="Password", type="password", pattern="[A-Za-z0-9]{8,}")}}
+            <br>
+            {{form.confirmPassword(placeholder="Confirm Password", type="password")}}
+            <br>
+            {{form.submit()}}
             <fieldset>
                 <label for="first-name">Enter Your First Name: <input type="text" id="first-name" required></label> <!-- Add to Database -->
                 <label for="last-name">Enter Your Last Name: <input type="text" id="last-name" required></label> <!-- Add to Database -->

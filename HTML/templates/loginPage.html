@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>AV Login Page</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='registrationstyles.css') }}" />
+    </head>
+    <body>
+        <h1>New Account</h1>
+        <p></p>
+        <form method="POST">
+            {{form.hidden_tag()}}
+            {{form.userName(placeholder="Email Address")}}
+            <br>
+            {{form.password(placeholder="Password", type="password")}}
+            <br>
+            {{form.submit()}}
+        </form>
+      </body>
+</html>
