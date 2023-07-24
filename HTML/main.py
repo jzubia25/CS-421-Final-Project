@@ -143,6 +143,9 @@ def registrationPage ():
 #     else:
 #         return redirect(url_for('error404'))
 
+@app.route('/explore', methods = ['GET', 'POST'])
+def explore():
+    return render_template('explore.html')
 
 @app.route('/error404')
 def error404():
