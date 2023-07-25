@@ -4,9 +4,11 @@ from flask import Flask, render_template, session, redirect, url_for
 from flask_wtf import FlaskForm
 from wtforms import (StringField, SubmitField, BooleanField, DateTimeField,
                      RadioField, SelectField, TextAreaField)
+from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from sqlalchemy import LargeBinary
 
 basedir = os.path.abspath(os.path.dirname(__file__)) 
 #__file__ refers to main.py
@@ -51,6 +53,8 @@ class RegistrationForm(FlaskForm):
     password = StringField(validators = [DataRequired()])
     confirmPassword = StringField(validators = [DataRequired()])
     userName = StringField(validators = [DataRequired()]) #Newly added. Needs to be implemented
+    profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
+    bio = TextAreaField(validators = [DataRequired()])
     submit = SubmitField('Register Now')
 
 class User(db.Model):
@@ -62,6 +66,7 @@ class User(db.Model):
     email = db.Column(db.Text) # Email
     userName = db.Column(db.Text) #Newly added. Needs to be implemented
     password = db.Column(db.Text)
+    profilePhoto = db.Column(LargeBinary)
 
 # class Artwork(db.Model):
 #     id = db.Column(db.Integer, primary_key = True)
@@ -92,6 +97,8 @@ def loginPage ():
         if user and user.password==passwordInput:
             global success 
             success = True
+            session['logged_in'] = True
+            session['user_id'] = user.id
             return redirect(url_for('userProfile'))#Needs to be updated to User's home page
         else:
             error = "Incorrect Login Info"

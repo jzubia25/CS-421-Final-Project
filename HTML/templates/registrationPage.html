@@ -25,6 +25,8 @@
             <br>
             {{form.userName(placeholder="Choose a UserName")}}
             <br>
+            {{ form.profilePhoto.label }} {{ form.profilePhoto() }}
+            <br>
             {{form.submit()}}
         </form>
         {% if error %}
