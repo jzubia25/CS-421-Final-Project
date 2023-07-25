@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explore</title>
     <!-- Add your CSS file link here -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 </head>
 <body>
     <!-- Navbar (You can create a separate header file and include it on all pages) -->
@@ -37,6 +37,7 @@
     </footer>
 
     <!-- Add your JavaScript file link here if needed -->
-    <script src="scripts.js"></script>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+
 </body>
 </html>
