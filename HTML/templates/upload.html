@@ -9,9 +9,16 @@
     <h1>Submit your artwork</h1>
     <!--placeholder for image-->
     <div>Preview:</div>
+    <!--In line styles are temporary-->
     <div
-      style="background-color: rgb(202, 203, 203); width: 200px; height: 200px"
+      class="imagePreview"
+      style="
+        background-color: rgba(199, 157, 238, 0.346);
+        width: 300px;
+        height: 300px;
+      "
     ></div>
+
     <form method="POST" enctype="multipart/form-data">
       {{form.hidden_tag()}}
       <div>
@@ -28,5 +35,28 @@
       </div>
       <div>{{form.saveDraft()}} {{form.submit()}}</div>
     </form>
+
+    <script>
+      //Using built in FileReader API, which can create a file preview on the client-side before uploading
+      let imagePreview = document.querySelector(".imagePreview");
+      let newImg = document.createElement("img");
+      newImg.setAttribute("style", "width: 250px; height: auto;");
+
+      document
+        .querySelector("#fileInput")
+        .addEventListener("change", function (e) {
+          console.log(e);
+          let file = e.target.files[0];
+          if (file) {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+              console.log(e);
+              newImg.setAttribute("src", e.target.result);
+              imagePreview.appendChild(newImg);
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+    </script>
   </body>
 </html>
