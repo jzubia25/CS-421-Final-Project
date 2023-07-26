@@ -3,9 +3,9 @@ import re
 from flask import Flask, render_template, session, redirect, url_for
 from flask_wtf import FlaskForm
 from wtforms import (StringField, SubmitField, BooleanField, DateTimeField,
-                     RadioField, SelectField, TextAreaField)
-from flask_wtf.file import FileField, FileAllowed
-from wtforms.validators import DataRequired
+                     RadioField, SelectField, TextAreaField, DecimalField)
+from flask_wtf.file import FileField, FileAllowed, FileRequired
+from wtforms.validators import DataRequired, Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import LargeBinary
@@ -56,6 +56,20 @@ class RegistrationForm(FlaskForm):
     profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
     bio = TextAreaField(validators = [DataRequired()])
     submit = SubmitField('Register Now')
+
+#Upload File Form
+class UploadForm(FlaskForm):
+    title = StringField('Title', validators = [DataRequired(), Length(max=150)])
+    fileInput = FileField('Upload File', validators = [FileRequired(), FileAllowed(['png', 'jpg', 'jpeg', 'gif'])])
+    description = TextAreaField('Artwork Description', validators = [DataRequired(), Length(max=400)])
+    saveDraft = SubmitField('Save Draft')
+    submit = SubmitField('Submit')
+
+
+#Selling Form inherits from UploadForm
+class SellingForm(UploadForm):
+    price = DecimalField('Price', validators=[DataRequired()])
+
 
 class User(db.Model):
     __tablename__="users"
@@ -160,6 +174,32 @@ def userProfile():
 @app.route('/explore', methods = ['GET', 'POST'])
 def explore():
     return render_template('explore.html')
+
+#Upload File Page 
+@app.route('/uploadPage', methods = ['GET', 'POST'])
+def uploadPage():
+    form = UploadForm()
+    if form.validate_on_submit():
+        if form.submit.data:
+            # Save the form data as 'Published'
+            return 'Artwork saved'
+        elif form.saveDraft.data:
+            # Save the form data as 'draft'
+            return 'Artwork saved as draft'
+    return render_template('upload.html', form=form)
+
+#Selling Page
+@app.route('/sellingPage', methods=['GET', 'POST'])
+def sellingPage():
+    form = SellingForm()
+    if form.validate_on_submit():
+        if form.submit.data:
+            # Save the form data as 'Published'
+            return 'Artwork saved'
+        elif form.saveDraft.data:
+            # Save the form data as 'draft'
+            return 'Artwork saved as draft'
+    return render_template('selling.html', form=form)
 
 @app.route('/error404')
 def error404():
