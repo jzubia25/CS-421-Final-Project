@@ -78,7 +78,7 @@ class User(db.Model):
     firstName = db.Column(db.Text)
     lastName = db.Column(db.Text)
     email = db.Column(db.Text) # Email
-    userName = db.Column(db.Text) #Newly added. Needs to be implemented
+    userName = db.Column(db.Text) #
     password = db.Column(db.Text)
     profilePhoto = db.Column(LargeBinary)
 
@@ -130,6 +130,7 @@ def registrationPage ():
         passwordInput = form.password.data
         confirmPasswordInput = form.confirmPassword.data
         userNameInput = form.userName.data
+        profilePhotoInput = form.profilePhoto.data
 
         emailCheck = User.query.filter_by(email=emailInput).first()
         if emailCheck: # If email already exists in database
@@ -149,7 +150,7 @@ def registrationPage ():
             error = "Passwords do not match."
             return render_template('registrationPage.html', form=form, error=error)
 
-        newUser = User(firstName=firstNameInput, lastName=lastNameInput, email=emailInput, userName=userNameInput, password=passwordInput)
+        newUser = User(firstName=firstNameInput, lastName=lastNameInput, email=emailInput, userName=userNameInput, password=passwordInput,profilePhoto=profilePhotoInput)
 
         db.session.add(newUser)
         db.session.commit()
@@ -206,6 +207,7 @@ def error404():
     return render_template ('error404.html')
 
 if __name__ == '__main__':
+    # app.run(host='0.0.0.0')
     app.run(debug=True)
 
 #home page or domain is locally represented as http://127.0.0.1:5000/
