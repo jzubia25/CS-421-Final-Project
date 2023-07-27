@@ -52,9 +52,9 @@ class RegistrationForm(FlaskForm):
     email = StringField(validators = [DataRequired()])
     password = StringField(validators = [DataRequired()])
     confirmPassword = StringField(validators = [DataRequired()])
-    userName = StringField(validators = [DataRequired()]) #Newly added. Needs to be implemented
+    userName = StringField(validators = [DataRequired()]) 
     profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
-    bio = TextAreaField(validators = [DataRequired()])
+    bio = TextAreaField()
     submit = SubmitField('Register Now')
 
 #Upload File Form
@@ -80,7 +80,21 @@ class User(db.Model):
     email = db.Column(db.Text) # Email
     userName = db.Column(db.Text) #
     password = db.Column(db.Text)
-    profilePhoto = db.Column(LargeBinary)
+    bio = db.Column(db.Text)
+    profilePhotoLink = db.Column(db.Text)
+
+    def __init__(self, firstName, lastName, email, userName, password, bio, profilePhotoLink):
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.userName = userName
+        self.password = password
+        self.bio = bio
+        self.profilePhotoLink = profilePhotoLink
+
+    def __repr__(self):
+        return f"<User {self.userName}>"
+
 
 # class Artwork(db.Model):
 #     id = db.Column(db.Integer, primary_key = True)
@@ -96,12 +110,12 @@ with app.app_context():
 
 success = False # Login variable
 
-@app.route ('/')
-def index ():
+@app.route('/')
+def index():
     return render_template('homepage.html')
 
 @app.route('/loginPage', methods = ['GET', 'POST'])
-def loginPage ():
+def loginPage():
     form = LoginForm()
     if form.validate_on_submit():
         userNameInput = form.userName.data
@@ -113,15 +127,17 @@ def loginPage ():
             success = True
             session['logged_in'] = True
             session['user_id'] = user.id
-            return redirect(url_for('userProfile'))#Needs to be updated to User's home page
+            return redirect(url_for('userProfile', user_id=user.id))#Needs to be updated to User's home page
         else:
             error = "Incorrect Login Info"
 
     return render_template ('loginPage.html', form=form, error=error if 'error' in locals() else None)
 
 @app.route('/registrationPage', methods = ['GET', 'POST'])
-def registrationPage ():
+def registrationPage():
     form = RegistrationForm()
+
+    genericPhotoLink = 'profile_photo.jpeg'
 
     if form.validate_on_submit():
         firstNameInput = form.firstName.data
@@ -131,6 +147,11 @@ def registrationPage ():
         confirmPasswordInput = form.confirmPassword.data
         userNameInput = form.userName.data
         profilePhotoInput = form.profilePhoto.data
+        bioInput = form.bio.data
+        profilePhotoInput = form.profilePhoto.data
+
+        if not profilePhotoInput:
+            profilePhotoInput=genericPhotoLink
 
         emailCheck = User.query.filter_by(email=emailInput).first()
         if emailCheck: # If email already exists in database
@@ -150,7 +171,7 @@ def registrationPage ():
             error = "Passwords do not match."
             return render_template('registrationPage.html', form=form, error=error)
 
-        newUser = User(firstName=firstNameInput, lastName=lastNameInput, email=emailInput, userName=userNameInput, password=passwordInput,profilePhoto=profilePhotoInput)
+        newUser = User(firstName=firstNameInput, lastName=lastNameInput, email=emailInput, userName=userNameInput, password=passwordInput, bio=bioInput, profilePhotoLink=profilePhotoInput)
 
         db.session.add(newUser)
         db.session.commit()
@@ -158,10 +179,11 @@ def registrationPage ():
     
     return render_template ('registrationPage.html', form=form)
 
-@app.route('/userProfile')
-def userProfile():
-    if success:
-        return render_template ('userProfile.html')
+@app.route('/userProfile/<int:user_id>')
+def userProfile(user_id):
+    if success and 'user_id' in session and session['user_id'] == user_id:
+        user = User.query.get(user_id)
+        return render_template ('userProfile.html', user=user)
     else:
         return redirect(url_for('error404'))
     
@@ -207,8 +229,8 @@ def error404():
     return render_template ('error404.html')
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0')
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
+    # app.run(debug=True)
 
 #home page or domain is locally represented as http://127.0.0.1:5000/
 # to create multiple pages we will use decorators;
