@@ -32,9 +32,10 @@ with app.app_context():
         print(f"User {user.userName} deleted")
     db.session.commit()
 
-    new_User = User('Obie', 'C','o@gmail.com','Obie2023','Ambition2023','I like basketball','profile_photo.jpeg')
+    new_User = User('Obie', 'C','o@gmail.com','Obie2023','Ambition2023','I like basketball','image/profile_photo.jpeg')
     db.session.add(new_User)
     db.session.commit()
     print(new_User.id)
     print(new_User.userName)
-    print(new_User.password)
+    print(new_User.password)    
+    print(new_User.profilePhotoLink)

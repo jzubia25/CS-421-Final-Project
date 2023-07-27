@@ -137,7 +137,7 @@ def loginPage():
 def registrationPage():
     form = RegistrationForm()
 
-    genericPhotoLink = 'profile_photo.jpeg'
+    genericPhotoLink = 'image/profile_photo.jpeg'
 
     if form.validate_on_submit():
         firstNameInput = form.firstName.data
@@ -183,7 +183,7 @@ def registrationPage():
 def userProfile(user_id):
     if success and 'user_id' in session and session['user_id'] == user_id:
         user = User.query.get(user_id)
-        return render_template ('userProfile.html', user=user)
+        return render_template ('userProfile.html', user=user, isUsersProfile=True)
     else:
         return redirect(url_for('error404'))
     
