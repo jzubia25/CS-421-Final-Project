@@ -77,8 +77,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     firstName = db.Column(db.Text)
     lastName = db.Column(db.Text)
-    email = db.Column(db.Text) # Email
-    userName = db.Column(db.Text) #
+    email = db.Column(db.Text) 
+    userName = db.Column(db.Text)
     password = db.Column(db.Text)
     bio = db.Column(db.Text)
     profilePhotoLink = db.Column(db.Text)
@@ -127,7 +127,7 @@ def loginPage():
             success = True
             session['logged_in'] = True
             session['user_id'] = user.id
-            return redirect(url_for('userProfile', user_id=user.id))#Needs to be updated to User's home page
+            return redirect(url_for('userProfile', user_id=user.id))#User's home page
         else:
             error = "Incorrect Login Info"
 
@@ -180,12 +180,18 @@ def registrationPage():
     return render_template ('registrationPage.html', form=form)
 
 @app.route('/userProfile/<int:user_id>')
-def userProfile(user_id):
-    if success and 'user_id' in session and session['user_id'] == user_id:
+def userProfile(user_id): 
+    if success and 'user_id' in session and session['user_id'] == user_id: # 1st person profile visit
         user = User.query.get(user_id)
         return render_template ('userProfile.html', user=user, isUsersProfile=True)
-    else:
-        return redirect(url_for('error404'))
+
+    # elif success and 'user_id' not in session:
+    else: # 3rd person profile visit
+        user = User.query.get(user_id)
+        return render_template('userProfile.html', user=user, isUsersProfile=False)    
+
+    # else:
+    #     return redirect(url_for('error404'))
     
 # @app.route('/profilePage')
 # def profilePage():
@@ -199,8 +205,10 @@ def explore():
     return render_template('explore.html')
 
 #Upload File Page 
-@app.route('/uploadPage', methods = ['GET', 'POST'])
-def uploadPage():
+@app.route('/uploadPage/<int:user_id>', methods = ['GET', 'POST'])
+def uploadPage(user_id):
+    user = User.query.get(user_id)
+
     form = UploadForm()
     if form.validate_on_submit():
         if form.submit.data:
@@ -209,11 +217,13 @@ def uploadPage():
         elif form.saveDraft.data:
             # Save the form data as 'draft'
             return 'Artwork saved as draft'
-    return render_template('upload.html', form=form)
+    return render_template('upload.html', user=user, form=form)
 
 #Selling Page
-@app.route('/sellingPage', methods=['GET', 'POST'])
-def sellingPage():
+@app.route('/sellingPage/<int:user_id>', methods=['GET', 'POST'])
+def sellingPage(user_id):
+    user = User.query.get(user_id)
+    
     form = SellingForm()
     if form.validate_on_submit():
         if form.submit.data:
@@ -222,11 +232,17 @@ def sellingPage():
         elif form.saveDraft.data:
             # Save the form data as 'draft'
             return 'Artwork saved as draft'
-    return render_template('selling.html', form=form)
+    return render_template('selling.html', user=user, form=form)
 
 @app.route('/error404')
 def error404():
     return render_template ('error404.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    session.pop('user_id', None)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

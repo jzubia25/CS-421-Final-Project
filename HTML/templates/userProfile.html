@@ -12,6 +12,9 @@
     <header>
         <nav>
             <!-- Your navigation links here -->
+            {% if isUsersProfile %}
+            <a href="{{ url_for('logout') }}">Sign Out</a>
+            {% endif %}
         </nav>
     </header>
 
@@ -28,8 +31,9 @@
                 <!-- Display other user details like bio, location, etc. here -->
                 <p>{{ user.bio }}</p>
                 {% if isUsersProfile %}
-                <a href="{{ url_for('uploadPage') }}">Upload New Art</a>
-                <a href="{{ url_for('sellingPage') }}">Sell Your Art</a>
+                <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
+                <!-- <a href="{{ url_for('userProfile', user_id=user.id )}}">Upload New Art</a> -->
+                <a href="{{ url_for('sellingPage', user_id=user.id ) }}">Sell Your Art</a>
                 {% endif %}
             </div>
         </div>
