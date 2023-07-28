@@ -42,14 +42,20 @@
         <div class="artwork-gallery">
             <h2>Artwork Gallery</h2>
             <div class="artwork-grid">
+                {% for artwork in artworks %}
                 <!-- Display the user's artworks here -->
                 <!-- You can use a loop to generate the artwork thumbnails -->
                 <!-- Example of a single artwork thumbnail -->
                 <div class="artwork-thumbnail">
-                    <a href="link-to-individual-artwork-page">
-                        <img src="path-to-artwork-thumbnail" alt="Artwork Title">
+                    <h3>{{ artwork.title}}</h3>
+                    <a href="{{ artwork.url }}">
+                        <img src="{{ artwork.url }}" alt="{{ artwork.title }}">
                     </a>
+                    <p>{{artwork.description}}</p>
+                    <p>{{artwork.price}}</p>
+                    <p>{{artwork.status}}</p>
                 </div>
+                {% endfor %}
             </div>
         </div>
     </section>

@@ -8,7 +8,7 @@
     <body>
         <h1>Register New Account</h1>
         <p>Create your acount. It's free and only takes a minute.</p>
-        <form method="POST">
+        <form method="POST" enctype="multipart/form=data">
             <!-- The "action" attribute can have various values depending on your application's requirements. 
             It can be an absolute URL, a relative URL, or even a server-side script or program that processes the form data. -->
 
@@ -27,7 +27,9 @@
             <br>
             {{form.bio(placeholder="Bio")}}
             <br>
-            {{form.profilePhoto(placeholder="Choose a Profile Photo")}}
+            {{ form.profilePhoto.label }} {{ form.profilePhoto }}
+            <!-- <label>Image File</label>
+            <input type="file" name="file"> -->
             <br>
             {{form.submit()}}
         </form>
