@@ -190,7 +190,7 @@ def add():
         },
         ExpiresIn=3600)
 
-
+    os.remove(filename)
     emailCheck = User.query.filter_by(email=email).first()
     if emailCheck: # If email already exists in database
         error = "The email you entered is already taken."
@@ -281,7 +281,7 @@ def addArt(user_id):
             "Key":"artgallery/"+ filename
         },
         ExpiresIn=3600)
-
+    os.remove(filename)
     newArt = Artwork(title =title, description=description, price=price, status=status, url=url, user_id=user_id)
     db.session.add(newArt)
     db.session.commit()

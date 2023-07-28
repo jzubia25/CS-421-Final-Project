@@ -1,4 +1,4 @@
-from main import app, db, User
+from main import app, db, User, Artwork
 import os
 import boto3
 
@@ -58,6 +58,33 @@ def delete_artwork_from_s3(artwork_url):
 
 # Now, run the database operations within the Flask application context
 with app.app_context():
+
+    all_users = User.query.all()
+    for user in all_users:
+        delete_photo_from_s3(user.profilePhotoLink)
+        db.session.delete(user)
+        print(user.profilePhotoLink)
+        print(f"User {user.userName} deleted")
+
+        artworks = Artwork.query.filter_by(user_id=user.id).all()
+        for artwork in artworks:
+            delete_artwork_from_s3(artwork.url)
+            db.session.delete(artwork)
+
+        # Delete the user
+        db.session.delete(user)
+        print(f"User {user.userName} deleted")
+
+
+    db.session.commit()
+    # List all Users
+    all_Users = User.query.all()
+    print(all_Users)
+
+    # List all Art
+    all_Art = Artwork.query.all()
+    print(all_Art)
+
     # new_User = User('John', 'James','j@gmail.com','JJsmoove','jjsmoove123','I like basketball','profile_photo.jpeg')
     # db.session.add(new_User)
     # db.session.commit()
@@ -82,24 +109,8 @@ with app.app_context():
     # second_User = User.query.get(2)
     # db.session.delete(second_User)
     # db.session.commit()
-    all_users = User.query.all()
-    for user in all_users:
-        delete_photo_from_s3(user.profilePhotoLink)
-        db.session.delete(user)
-        print(user.profilePhotoLink)
-        print(f"User {user.userName} deleted")
-
-        artworks = Artwork.query.filter_by(user_id=user.id).all()
-        for artwork in artworks:
-            delete_artwork_from_s3(artwork.url)
-            db.session.delete(artwork)
-
-        # Delete the user
-        db.session.delete(user)
-        print(f"User {user.userName} deleted")
 
 
-    db.session.commit()
     # new_User = User('Obie', 'C','o@gmail.com','Obie2023','Ambition2023','I like basketball','image/profile_photo.jpeg')
     # db.session.add(new_User)
     # db.session.commit()
