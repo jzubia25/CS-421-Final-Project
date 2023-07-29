@@ -13,8 +13,8 @@ from sqlalchemy import LargeBinary
 import boto3
 from werkzeug.utils import secure_filename
 
-ACCESS_KEY ="AKIA6IBZYP2JOCLZAYGT"
-SECRET_KEY ="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"
+ACCESS_KEY ="AKIA6IBZYP2JKDVKVIOL"
+SECRET_KEY ="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"
 AWS_REGION = "us-east-2"
 
 #artvisionbucket
