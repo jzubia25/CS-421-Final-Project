@@ -174,23 +174,7 @@ def add():
     f = request.files["file"]
     # filename = f.filename.split("\\")[-1]
     filename = f"{username}profilepicture.{f.filename.split('.')[-1]}"
-    f.save(secure_filename(filename))
 
-    client = boto3.client(
-        's3',
-        aws_access_key_id = ACCESS_KEY,
-        aws_secret_access_key = SECRET_KEY,
-        region_name=AWS_REGION
-        )
-    client.upload_file(filename,"artvisionbucket", "profilephoto/" +filename)
-    url = client.generate_presigned_url("get_object",
-        Params={
-            "Bucket":"artvisionbucket",
-            "Key":"profilephoto/"+ filename
-        },
-        ExpiresIn=3600)
-
-    os.remove(filename)
     emailCheck = User.query.filter_by(email=email).first()
     if emailCheck: # If email already exists in database
         error = "The email you entered is already taken."
@@ -208,6 +192,24 @@ def add():
     if password != confirmpassword:
         error = "Passwords do not match."
         return render_template('register.html', error=error)
+
+    f.save(secure_filename(filename))
+
+    client = boto3.client(
+        's3',
+        aws_access_key_id = ACCESS_KEY,
+        aws_secret_access_key = SECRET_KEY,
+        region_name=AWS_REGION
+        )
+    client.upload_file(filename,"artvisionbucket", "profilephoto/" +filename)
+    url = client.generate_presigned_url("get_object",
+        Params={
+            "Bucket":"artvisionbucket",
+            "Key":"profilephoto/"+ filename
+        },
+        ExpiresIn=3600)
+
+    os.remove(filename)
 
     newUser = User(firstName=firstname, lastName=lastname, email=email, 
         userName=username, password=password, bio=bio, profilePhotoLink=url)
