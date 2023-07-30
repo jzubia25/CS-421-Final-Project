@@ -16,8 +16,8 @@ from werkzeug.utils import secure_filename
 
 # ###
 # GRAB ACCESS_KEY and SECRET_KEY FROM GITHUB. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
-# ACCESS_KEY =""
-# SECRET_KEY =""
+ACCESS_KEY =
+SECRET_KEY =
 AWS_REGION = "us-east-2"
 
 #artvisionbucket
@@ -279,7 +279,7 @@ def addArt(user_id):
     )
 
     # Upload the file to S3 bucket
-    client.upload_file(filename, "artvisionbucket", "artgallery/" + filename)
+    client.upload_file(filename, "artvisionbucket", "artgallery/" +str(user.userName)+"/"+ filename)
     url = client.generate_presigned_url("get_object",
         Params={
             "Bucket":"artvisionbucket",
@@ -335,76 +335,18 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True)
-    # app.run(debug=True)
+    # app.run(host='0.0.0.0',debug=True)
+    app.run(debug=True)
 
 #home page or domain is locally represented as http://127.0.0.1:5000/
 # to create multiple pages we will use decorators;
 #  @app.route("/another-page")
 
 
+#  REFERENCES
+"""
+HTML <input type="file">
+https://www.w3schools.com/tags/att_input_type_file.asp#:~:text=The%20%3Cinput%20type%3D%22file,tag%20for%20best%20accessibility%20practices!
 
 
-
-
-
-# @app.route('/registrationPage', methods = ['GET', 'POST'])
-# def registrationPage():
-#     form = RegistrationForm()
-
-#     genericPhotoLink = 'image/profile_photo.jpeg'
-
-#     if form.validate_on_submit():
-#         firstNameInput = form.firstName.data
-#         lastNameInput = form.lastName.data
-#         emailInput = form.email.data
-#         passwordInput = form.password.data
-#         confirmPasswordInput = form.confirmPassword.data
-#         userNameInput = form.userName.data
-#         # profilePhotoInput = form.profilePhoto.data
-#         bioInput = form.bio.data
-#         # profilePhotoInput = form.profilePhoto.data
-
-#         f = request.files["file"]
-#         filename = f.filename.split("\\")[-1]
-#         f.save(secure_filename(filename))
-
-
-#         client = boto3.client(
-#             's3',
-#             aws_access_key_id = ACCESS_KEY,
-#             aws_secret_access_key = SECRET_KEY,
-#             region_name=AWS_REGION
-#             )
-#         client.upload_file(filename,"artvisionbucket", "images/" +filename)
-
-#         # else:
-#         #     profile_Photo_Link = genericPhotoLink           
-
-
-#         emailCheck = User.query.filter_by(email=emailInput).first()
-#         if emailCheck: # If email already exists in database
-#             error = "The email you entered is already taken."
-#             return render_template ('registrationPage.html', form=form, error=error)
-        
-#         userNameCheck = User.query.filter_by(userName=userNameInput).first()
-#         if userNameCheck: # If email already exists in database
-#             error = "The username you entered is already taken."
-#             return render_template ('registrationPage.html', form=form, error=error)
-
-#         if not passwordValidation(passwordInput):
-#             error = "Password must contain at least one capital letter, one lowercase letter, and end with a number."
-#             return render_template('registrationPage.html', form=form, error=error)
-        
-#         if passwordInput != confirmPasswordInput:
-#             error = "Passwords do not match."
-#             return render_template('registrationPage.html', form=form, error=error)
-
-#         newUser = User(firstName=firstNameInput, lastName=lastNameInput, email=emailInput, 
-#             userName=userNameInput, password=passwordInput, bio=bioInput, profilePhotoLink=genericPhotoLink)
-
-#         db.session.add(newUser)
-#         db.session.commit()
-#         return redirect(url_for('loginPage'))
-    
-#     return render_template ('registrationPage.html', form=form)
+"""
