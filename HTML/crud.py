@@ -5,9 +5,7 @@ import boto3
 ACCESS_KEY ="AKIA6IBZYP2JOCLZAYGT"
 SECRET_KEY ="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"
 AWS_REGION = "us-east-2"
-# Project keys as of July 30 2:00 am
-# ACCESS_KEY ="AKIA6IBZYP2JM3QRWLFZ"
-# SECRET_KEY ="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"
+
 def delete_photo_from_s3(photo_url):
     if not photo_url:
         return
