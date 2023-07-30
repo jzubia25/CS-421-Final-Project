@@ -13,9 +13,13 @@ from sqlalchemy import LargeBinary
 import boto3
 from werkzeug.utils import secure_filename
 
-ACCESS_KEY ="AKIA6IBZYP2JKDVKVIOL"
-SECRET_KEY ="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"
-AWS_REGION = "us-east-2"
+
+# ###
+# UNCOMMENT ACCESS_KEY, SECRET_KEY and AWS_REGION TO RUN BUT COMMENT BACK OUT BEFORE PUSHING TO GITHUB
+# ####
+# ACCESS_KEY ="AKIA6IBZYP2JFIANCCQN"
+# SECRET_KEY ="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"
+# AWS_REGION = "us-east-2"
 
 #artvisionbucket
 
