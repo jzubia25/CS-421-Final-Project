@@ -4,58 +4,56 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Upload</title>
+    <link rel="stylesheet" href="../static/styles.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   </head>
-  <body>
-    <h1>Hi {{ user.firstName }}, submit your artwork</h1>
-    <!--placeholder for image-->
-    <div>Preview:</div>
-    <!--In line styles are temporary-->
-    <div
-      class="imagePreview"
-      style="
-        background-color: rgba(199, 157, 238, 0.346);
-        width: 300px;
-        height: 300px;
-      "
-    ></div>
 
-    <form class="ui form" action="{{ url_for('addArt', user_id=user_id) }}" method="POST" enctype="multipart/form-data">
-      <div class="field">
-        <label>Image File</label>
-        <input type="file" name="file">
-        <label>Title</label>
-        <input type="text" name="title" placeholder="title"> <br>
-        <label>description</label>
-        <input type="text" name="description" placeholder="description"> <br>
-        <label>price</label>
-        <input type="number" step="0.01" min="0.01" name="price" placeholder="price"> <br>
-        <label>Status</label>
-        <input type="text" name="status" placeholder="status"> <br>
+  <body class="upload-page gradient-bg">
+    <main class="main-content">
+      <div class="wrapper">
+      <h1>Hi {{ user.firstName }}, submit your artwork</h1>
+      <div class="form-container">
+      <form class="ui form" action="{{ url_for('addArt', user_id=user_id) }}" method="POST" enctype="multipart/form-data">
+          <div>
+          <label>Title</label>
+          <br />
+          <input type="text" name="title" /> 
+          </div>
+          <div>
+            <input type="file" name="file" class="fileInput" />
+          </div>
+          <div>
+          <label>Description</label> <br />
+          <textarea id="description" name="description" rows="5" cols="40"></textarea>
+          </div>
+        <!-- <div>
+          <label>price</label>
+          <br />
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            name="price"
+            placeholder="price"
+          />
+        </div> -->
+
+        <!-- <div>
+          <label>Status</label>
+          <br />
+          <input type="text" name="status" placeholder="status" />
+        </div> -->
+        <button class="btn custom-button" type="submit">Submit</button>
+      </form>
+    
+      <div class="preview">
+        Preview
+        <div class="image-preview"></div>
+        </div>
       </div>
-      <button class="ui blue button" type="submit">Submit</button>
-    </form>
-
-    <script>
-      //Using built in FileReader API, which can create a file preview on the client-side before uploading
-      let imagePreview = document.querySelector(".imagePreview");
-      let newImg = document.createElement("img");
-      newImg.setAttribute("style", "width: 250px; height: auto;");
-
-      document
-        .querySelector("#fileInput")
-        .addEventListener("change", function (e) {
-          console.log(e);
-          let file = e.target.files[0];
-          if (file) {
-            let reader = new FileReader();
-            reader.onload = function (e) {
-              console.log(e);
-              newImg.setAttribute("src", e.target.result);
-              imagePreview.appendChild(newImg);
-            };
-            reader.readAsDataURL(file);
-          }
-        });
-    </script>
+      <div>
+    </main>
+    <script src="../static/js/script.js"></script>
   </body>
 </html>

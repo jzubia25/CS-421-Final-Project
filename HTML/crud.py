@@ -2,10 +2,11 @@ from main import app, db, User, Artwork
 import os
 import boto3
 
-ACCESS_KEY ="AKIA6IBZYP2JOCLZAYGT"
-SECRET_KEY ="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"
+# ###
+# GRAB ACCESS_KEY and SECRET_KEY FROM GITHUB. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
+ACCESS_KEY =
+SECRET_KEY =
 AWS_REGION = "us-east-2"
-
 
 def delete_photo_from_s3(photo_url):
     if not photo_url:
@@ -51,7 +52,7 @@ def delete_artwork_from_s3(artwork_url):
     )
 
     try:
-        client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + filename)
+        client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + "bham.jpg")
         print(f"Artwork {filename} deleted from S3 bucket")
     except Exception as e:
         print(f"Error deleting artwork {filename} from S3 bucket: {e}")
