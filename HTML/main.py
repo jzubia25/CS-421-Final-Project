@@ -263,7 +263,8 @@ def userProfile(user_id):
 def explore():
     if (session['logged_in'] == True):
         artworks = Artwork.query.all()
-        return render_template('explore.html', artworks=artworks, userLoggedIn = True)
+        user = User.query.get(session['user_id'])
+        return render_template('explore.html', artworks=artworks, user=user, userLoggedIn = True)
     else:
         artworks = Artwork.query.all()
         return render_template('explore.html',artworks=artworks, userLoggedIn = False)

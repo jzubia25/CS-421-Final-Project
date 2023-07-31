@@ -9,7 +9,7 @@
     --bg-gradient-scd: radial-gradient(circle farthest-corner at 70% 20%, rgba(35, 16, 255, 0.7) 0%, rgba(195, 136, 67, 0.35) 56%, rgba(248, 194, 0, 0) 100%), #FFFFFF;
     --font: 'Inter', sans-serif;
     --form-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
-  }
+}
 
 body {
     background: var(--bg-gradient);
@@ -40,8 +40,12 @@ body {
 }
 
 .artwork-gallery {
-    position:relative;
-    width:75%;
+    position: relative;
+    width: 75%;
     text-align: right;
     height: 100%
+}
+
+.profile-details img {
+    width: 200px;
 }

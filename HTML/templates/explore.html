@@ -10,20 +10,9 @@
 <body>
     <!-- Navbar (You can create a separate header file and include it on all pages) -->
     <header>
-        <nav>
-            <!-- Your navigation links here -->
-            {% if userLoggedIn==False %}
-            <a href="{{ url_for('register') }}">Register</a>
-            <a href="{{ url_for('login') }}">Log In</a>
-            {% endif %}
-            
-            {% if userLoggedIn %}
-            <a href="{{ url_for('logout') }}">Log Out</a>
-
-            {% endif %}
-
-        </nav>
-    </header>
+        {% extends "base.html" %}
+      </header>
+    {% block content %}
 
         <!-- Artwork Gallery Section -->
         <div class="artwork-gallery">
@@ -49,6 +38,6 @@
 
     <!-- Add your JavaScript file link here if needed -->
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
-
+    {% endblock %}
 </body>
 </html>

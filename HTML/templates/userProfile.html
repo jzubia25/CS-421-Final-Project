@@ -11,9 +11,12 @@
 <body>
     <!-- Navbar (You can create a separate header file and include it on all pages) -->
     <header>
-        <nav>
-            <!-- Your navigation links here -->
-            {% if isUsersProfile %}
+        {% extends "base.html" %}
+    </header>
+
+    <!-- User Profile Section -->
+    {% block content %}
+    {% if isUsersProfile %}
             <a href="{{ url_for('logout') }}">Sign Out</a>
             <a href="{{ url_for('deleteAccount') }}">Delete Account</a>
             <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
@@ -21,11 +24,7 @@
             <a href="{{ url_for('sellingPage', user_id=user.id ) }}">Sell Your Art</a>
             <a href="{{ url_for('deletePage', user_id=user.id ) }}">Delete Art</a>
 
-            {% endif %}
-        </nav>
-    </header>
-
-    <!-- User Profile Section -->
+    {% endif %}
     <section class="profile">
             
             <div class="profile-details">
@@ -75,5 +74,6 @@
 
     <!-- Add your JavaScript file link here if needed -->
     <script src="scripts.js"></script>
+    {% endblock %}
 </body>
 </html>

@@ -11,8 +11,9 @@
   </head>
   <body>
     <header>
-      <h1>Checkout</h1>
+      {% extends "base.html" %}
     </header>
+  {% block content %}
     <main>
       <form>
         <h2>Shipping Address</h2>
@@ -98,5 +99,6 @@
         </div>
       </div>
     </main>
+    {% endblock %}
   </body>
 </html>

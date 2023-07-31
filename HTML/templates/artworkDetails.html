@@ -10,13 +10,9 @@
 <body class="details-page gradient-bg-l">
     <!-- Navbar (You can create a separate header file and include it on all pages) -->
     <header>
-        <nav>
-            <!-- Your navigation links here -->
-            {% if isUsersProfile %}
-            <a href="{{ url_for('logout') }}">Sign Out</a>
-            {% endif %}
-        </nav>
-    </header>
+        {% extends "base.html" %}
+      </header>
+    {% block content %}
 
         <!-- Artwork Gallery Section -->
         <div class="artwork">
@@ -52,5 +48,6 @@
 
     <!-- Add your JavaScript file link here if needed -->
     <script src="scripts.js"></script>
+    {% endblock %}
 </body>
 </html>
