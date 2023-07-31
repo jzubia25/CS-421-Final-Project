@@ -3,38 +3,40 @@
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE-edge">
-        <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Register Page</title> 
         <link rel="stylesheet" href="{{ url_for('static', filename='registrationstyles.css') }}">
     </head>
     <body>
-        <h1>Register Page</h1>
+        <main>
+        <div class="register fd-container">
+            <img src="{{ url_for('static', filename='ArtVision_Logo.svg')}}" width="80" alt="Logo">
+            <h1>Create an Account</h1>
             <form class="ui form" action="/add" method="post" enctype="multipart/form-data">
-                <div class="field">
-                    <label>First Name</label>
                     <input type="text" name="firstname" placeholder="first name"> <br>
-                    <label>Last Name</label>
                     <input type="text" name="lastname" placeholder="first name"> <br>
-                    <label>Email</label>
                     <input type="text" name="email" placeholder="email"> <br>
-                    <label>Password</label>
                     <input type="text" name="password" placeholder="password"> <br>
-                    <label>Confirm Password</label>
                     <input type="text" name="confirmpassword" placeholder="confirm password"> <br>
-                    <label>User Name</label>
                     <input type="text" name="username" placeholder="username"> <br>
-                    <label>Bio</label>
                     <input type="text" name="bio" placeholder="Bio"> <br>
-                    <label>Image File</label>
                     <input type="file" name="file">
-
-                </div>
-                <button class="ui blue button" type="submit">Login</button>
+                    <br>
+                <button class="ui blue button custom-button" type="submit">Login</button>
             </form>
             <a href="/">Go to main page</a>
+        </div>
             <!-- {% if error %}
             <p>{{ error }}</p>
             {% endif %} -->
+          <div class="artwork-info">
+            <img class="user" src="{{ url_for('static', filename='ArtVision_Logo.svg')}}">
+            <div class="artist-details">
+            <p>Artowrk title</p>
+            <p>by Artist</p>
+          </div>
+          </div>
+        </main>
     </body>
 </html>
 

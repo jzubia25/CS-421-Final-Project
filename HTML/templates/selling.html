@@ -4,33 +4,50 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Selling</title>
+    <link rel="stylesheet" href="../static/styles.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   </head>
-  <body>
-    <h1>New listing for {{ user.firstName }} </h1>
-    <!--placeholder for image-->
-    <div>Preview:</div>
-    <div
-      style="background-color: rgb(202, 203, 203); width: 200px; height: 200px"
-    ></div>
-    <form method="POST" enctype="multipart/form-data">
-      {{form.hidden_tag()}}
-      <div>
-        {{form.title.label}} <br />
-        {{form.title()}}
+  <body class="selling-page gradient-bg">
+    <main class="main-content">
+      <div class="wrapper">
+        <h1>New listing for {{ user.firstName }} </h1>
+      <div class="form-container">
+      <form method="POST" enctype="multipart/form-data">
+          <div>
+          <label>Title</label>
+          <br />
+          <input type="text" name="title" /> 
+          </div>
+          <div>
+            <input type="file" name="file" class="fileInput" />
+          </div>
+          <div>
+          <label>Description</label> <br />
+          <textarea id="description" name="description" rows="5" cols="40"></textarea>
+          </div>
+        <div>
+          <label>Price</label>
+          <br />
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            name="price"
+            placeholder="$"
+          />
+          <p>Estimated earnings: $$</p>
+        </div>
+        <button class="btn custom-button" type="submit">Submit</button>
+      </form>
+    
+      <div class="preview">
+        Preview
+        <div class="image-preview"></div>
+        </div>
       </div>
       <div>
-        {{form.fileInput.label}} <br />
-        {{form.fileInput()}}
-      </div>
-      <div>
-        {{form.description.label}} <br />
-        {{form.description()}}
-      </div>
-      <div>
-        {{form.price.label}} <br />
-        {{form.price()}}
-      </div>
-      <div>{{form.saveDraft()}} {{form.submit()}}</div>
-    </form>
+    </main>
+    <script src="../static/js/script.js"></script>
   </body>
 </html>
