@@ -83,6 +83,16 @@ input:not(:last-child) {
   margin-bottom: 10px;
 }
 
+.pronouns, .title {
+  background-color: rgb(254, 254, 254, 22%);
+  color: #585B65;
+  outline: none;
+  border-radius: 45px;
+  border: 1px solid #D9D9D9;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+}
+
 
 .createAccount {
   color: rgb(6, 6, 106, 66%);

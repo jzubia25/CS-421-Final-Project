@@ -9,7 +9,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired, FileSize
 from wtforms.validators import DataRequired, Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import LargeBinary
+from sqlalchemy import LargeBinary, or_
 import boto3
 from werkzeug.utils import secure_filename
 
@@ -53,20 +53,21 @@ def passwordValidation(PWD):
         return False
 
 class LoginForm(FlaskForm):
-    userName = StringField(validators = [DataRequired()])
+    userIdentity = StringField(validators = [DataRequired()])
     password = StringField(validators = [DataRequired()])
     submit = SubmitField('Login')
 
 class RegistrationForm(FlaskForm):
-    firstName = StringField(validators = [DataRequired()])
-    lastName = StringField(validators = [DataRequired()])
+    name = StringField(validators = [DataRequired()])
     email = StringField(validators = [DataRequired()])
     password = StringField(validators = [DataRequired()])
     confirmPassword = StringField(validators = [DataRequired()])
     userName = StringField(validators = [DataRequired()]) 
     profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png']), FileSize(max_size=2 * 1024 * 1024, message='No photos larger than 2MB.')])
     bio = TextAreaField()
-    submit = SubmitField('Register Now')
+    pronouns = SelectField('Choose your pronouns', choices=[('option1', 'she/her'),('option2', 'he/him'), ('option3', 'they/them'), ('option4', 'she/they'), ('option5', 'he/they'), ('option6', 'any pronouns')])
+    title = SelectField('Choose a title', choices=[('title1', 'Professional'), ('title2', 'Student'), ('title3', 'Hobbyist')])
+    submit = SubmitField('Sign Up')
 
 #Upload File Form
 class UploadForm(FlaskForm):
@@ -87,22 +88,26 @@ class User(db.Model):
     __tablename__="users"
 
     id = db.Column(db.Integer, primary_key = True)
-    firstName = db.Column(db.Text)
-    lastName = db.Column(db.Text)
+    name = db.Column(db.Text)
     email = db.Column(db.Text) 
     userName = db.Column(db.Text)
     password = db.Column(db.Text)
     bio = db.Column(db.Text)
     profilePhotoLink = db.Column(db.Text)
+    pronouns = db.Column(db.Text)
+    title = db.Column(db.Text)
+    registrationDate = db.Column(db.DateTime)
 
-    def __init__(self, firstName, lastName, email, userName, password, bio, profilePhotoLink):
-        self.firstName = firstName
-        self.lastName = lastName
+    def __init__(self, name, email, userName, password, bio, profilePhotoLink, pronouns, title, registrationDate):
+        self.name = name
         self.email = email
         self.userName = userName
         self.password = password
         self.bio = bio
         self.profilePhotoLink = profilePhotoLink
+        self.pronouns = pronouns
+        self.title = title
+        self.registrationDate = registrationDate
 
     def __repr__(self):
         return f"<User {self.userName}>"
@@ -118,14 +123,17 @@ class Artwork(db.Model):
     status = db.Column(db.String(20), nullable = True)
     url = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
+    uploadDate = db.Column(db.DateTime)
 
-    def __init__(self, title, description, price, status, url, user_id):
+
+    def __init__(self, title, description, price, status, url, user_id, uploadDate):
         self.title = title
         self.description = description
         self.price = price
         self.status = status
         self.url = url
         self.user_id = user_id
+        self.uploadDate = uploadDate
 
     def __repr__(self):
         return f"<Artwork {self.title}>"
@@ -145,10 +153,11 @@ def index():
 def loginPage():
     form = LoginForm()
     if form.validate_on_submit():
-        userNameInput = form.userName.data
+        userIdentity = form.userIdentity.data
         passwordInput = form.password.data
 
-        user = User.query.filter_by(userName=userNameInput).first()
+        #user = User.query.filter_by(userName=userIdentity).first()
+        user = User.query.filter((User.userName==userIdentity) | (User.email==userIdentity)).first()
         if user and user.password==passwordInput:
             global success 
             success = True
@@ -168,14 +177,15 @@ def register():
 def add():
     genericPhotoLink = 'image/profile_photo.jpeg'
 
-    firstname = request.form.get("firstname")
-    lastname = request.form.get("lastname")
+    name = request.form.get("name")
     email = request.form.get("email")
     username = request.form.get("username")
     password = request.form.get("password")
     confirmpassword = request.form.get("confirmpassword")
     bio = request.form.get("bio")
     f = request.files["file"]
+    pronouns = request.form.get("pronouns")
+    title = request.form.get("title")
     # filename = f.filename.split("\\")[-1]
     filename = f"{username}profilepicture.{f.filename.split('.')[-1]}"
 
@@ -202,7 +212,7 @@ def add():
     client = boto3.client(
         's3',
         aws_access_key_id = ACCESS_KEY,
-        aws_secret_access_key = SECRET_KEY,
+        aws_secret_access_key = SECRET_ACCESS_KEY ,
         region_name=AWS_REGION
         )
     client.upload_file(filename,"artvisionbucket", "profilephoto/"+ username + "/" +filename)
@@ -215,8 +225,8 @@ def add():
 
     os.remove(filename)
 
-    newUser = User(firstName=firstname, lastName=lastname, email=email, 
-        userName=username, password=password, bio=bio, profilePhotoLink=url)
+    newUser = User(name=name, email=email, 
+        userName=username, password=password, bio=bio, profilePhotoLink=url, pronouns=pronouns, title=title, registrationDate=datetime.date.today())
 
     db.session.add(newUser)
     db.session.commit()
@@ -251,8 +261,12 @@ def userProfile(user_id):
 
 @app.route('/explore')
 def explore():
-    artworks = Artwork.query.all()
-    return render_template('explore.html',artworks=artworks)
+    if (session['logged_in'] == True):
+        artworks = Artwork.query.all()
+        return render_template('explore.html', artworks=artworks, userLoggedIn = True)
+    else:
+        artworks = Artwork.query.all()
+        return render_template('explore.html',artworks=artworks, userLoggedIn = False)
 
 @app.route('/artwork/<int:artwork_id>')
 def artworkDetails(artwork_id):
@@ -262,7 +276,7 @@ def artworkDetails(artwork_id):
         # For example, you can return an error page or redirect to the Explore page
         return render_template('error.html', message='Artwork not found.')
 
-    return render_template('artwork_details.html', artwork=artwork)
+    return render_template('artworkDetails.html', artwork=artwork)
 
 
 #Upload File Page 
@@ -286,8 +300,8 @@ def addArt(user_id):
 
     client = boto3.client(
         's3',
-        aws_access_key_id=ACCESS_KEY,
-        aws_secret_access_key=SECRET_KEY,
+        aws_access_key_id= ACCESS_KEY,
+        aws_secret_access_key= SECRET_ACCESS_KEY,
         region_name=AWS_REGION
     )
 
@@ -300,7 +314,7 @@ def addArt(user_id):
         },
         ExpiresIn=3600)
     os.remove(filename)
-    newArt = Artwork(title =title, description=description, price=price, status=status, url=url, user_id=user_id)
+    newArt = Artwork(title =title, description=description, price=price, status=status, url=url, user_id=user_id, uploadDate=datetime.date.today())
     db.session.add(newArt)
     db.session.commit()
     return redirect(url_for('userProfile', user_id=user_id))
@@ -354,12 +368,12 @@ def deleteArt(user_id):
         if artwork:
             client = boto3.client(
                 's3',
-                aws_access_key_id=ACCESS_KEY,
-                aws_secret_access_key=SECRET_KEY,
+                aws_access_key_id= ACCESS_KEY,
+                aws_secret_access_key= SECRET_ACCESS_KEY,
                 region_name=AWS_REGION
             )
             client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ filename)
-            de.session.delete(artwork)
+            db.session.delete(artwork)
     # Need query to find and delete art from database
 
     db.session.commit()
@@ -374,6 +388,12 @@ def logout():
     session.pop('logged_in', None)
     session.pop('user_id', None)
     return redirect(url_for('index'))
+
+@app.route('/deleteAccount')
+def deleteAccount():
+    User.query.filter_by(id=session['user_id']).delete()
+    db.session.commit()
+    return redirect(url_for('explore'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)

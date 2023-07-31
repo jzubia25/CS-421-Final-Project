@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Page</title>
+    <title>{{user.userName}} ({{user.name}}) | ArtVision</title>
     <!-- Add your CSS file link here -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}" />
+
 </head>
 <body>
     <!-- Navbar (You can create a separate header file and include it on all pages) -->
@@ -14,32 +15,38 @@
             <!-- Your navigation links here -->
             {% if isUsersProfile %}
             <a href="{{ url_for('logout') }}">Sign Out</a>
+            <a href="{{ url_for('deleteAccount') }}">Delete Account</a>
+            <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
+            <!-- <a href="{{ url_for('userProfile', user_id=user.id )}}">Upload New Art</a> -->
+            <a href="{{ url_for('sellingPage', user_id=user.id ) }}">Sell Your Art</a>
+            <a href="{{ url_for('deletePage', user_id=user.id ) }}">Delete Art</a>
+
             {% endif %}
         </nav>
     </header>
 
     <!-- User Profile Section -->
     <section class="profile">
-        <div class="profile-info">
-            <div class="profile-picture">
+            
+            <div class="profile-details">
+                <h1>{{ user.userName }} </h1>
                 <img src="{{ user.profilePhotoLink }}" alt="profile pic">
                 <!-- Display the user's profile picture here -->
                 <!-- You can use an <img> tag or background-image in CSS -->
-            </div>
-            <div class="profile-details">
-                <h1>{{ user.firstName }} {{ user.lastName }}</h1>
                 <!-- Display other user details like bio, location, etc. here -->
-                <p>{{ user.bio }}</p>
-                {% if isUsersProfile %}
-                <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
-                <!-- <a href="{{ url_for('userProfile', user_id=user.id )}}">Upload New Art</a> -->
-                <a href="{{ url_for('sellingPage', user_id=user.id ) }}">Sell Your Art</a>
-                <a href="{{ url_for('deletePage', user_id=user.id ) }}">Delete Art</a>
-                {% endif %}
+                <p>{{ user.name }}</p>
+                <p>{{ user.pronouns}}</p>
+                <p>{{ user.title}}</p>
+                <p>About Me</p>
+                <div class="bio">
+                    <p>{{ user.bio }}</p>
+                </div>
+                <p>Member Since: {{ (user.registrationDate).strftime("%B %d, %Y")}}</p>
             </div>
-        </div>
+    </section>
 
         <!-- Artwork Gallery Section -->
+        <section>
         <div class="artwork-gallery">
             <h2>Artwork Gallery</h2>
             <div class="artwork-grid">

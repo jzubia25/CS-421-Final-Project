@@ -3,42 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore ArtVision</title>
+    <title>{{artwork.title}}</title>
     <!-- Add your CSS file link here -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Navbar (You can create a separate header file and include it on all pages) -->
     <header>
         <nav>
             <!-- Your navigation links here -->
-            {% if userLoggedIn==False %}
-            <a href="{{ url_for('register') }}">Register</a>
-            <a href="{{ url_for('login') }}">Log In</a>
+            {% if isUsersProfile %}
+            <a href="{{ url_for('logout') }}">Sign Out</a>
             {% endif %}
-            
-            {% if userLoggedIn %}
-            <a href="{{ url_for('logout') }}">Log Out</a>
-
-            {% endif %}
-
         </nav>
     </header>
 
         <!-- Artwork Gallery Section -->
         <div class="artwork-gallery">
-            <h2>ArtVision Gallery</h2>
-            <div class="artwork-grid">
-                {% for artwork in artworks %}
-                <!-- Display the sitewide artworks here -->
-                <!-- Grab random/popular artwork from within a certain time period -->
+            <h2>{{artwork.title}}</h2>
+            
+                <!-- Display the user's artworks here -->
+                <!-- You can use a loop to generate the artwork thumbnails -->
                 <!-- Example of a single artwork thumbnail -->
                 <div class="artwork-thumbnail">
-                    <a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">
+                    <a href="{{ artwork.url }}">
                         <img src="{{ artwork.url }}" alt="{{ artwork.title }}">
                     </a>
-                </div>
-                {% endfor %}    
+                    <p>{{artwork.description}}</p>
+                    <p>{{artwork.price}}</p>
+                    <p>{{artwork.status}}</p>
             </div>
         </div>
 
@@ -48,7 +41,6 @@
     </footer>
 
     <!-- Add your JavaScript file link here if needed -->
-    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
-
+    <script src="scripts.js"></script>
 </body>
 </html>

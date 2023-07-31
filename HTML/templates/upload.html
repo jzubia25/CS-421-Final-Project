@@ -12,7 +12,7 @@
   <body class="upload-page gradient-bg">
     <main class="main-content">
       <div class="wrapper">
-      <h1>Hi {{ user.firstName }}, submit your artwork</h1>
+      <h1>Hi {{ user.name }}, submit your artwork</h1>
       <div class="form-container">
       <form class="ui form" action="{{ url_for('addArt', user_id=user_id) }}" method="POST" enctype="multipart/form-data">
           <div>

@@ -19,12 +19,12 @@ body {
 header,
 nav {
     background-color: #fff;
-    color: #fff;
+    color: purple;
     padding: 10px 20px;
 }
 
 nav a {
-    color: #fff;
+    color: black;
     text-decoration: none;
     padding: 0 10px;
 }

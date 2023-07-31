@@ -1,0 +1,47 @@
+:root {
+    --primary: #3E3EF6;
+    --primary-fd: #6962CE;
+    --dark-secondary: #8392B9;
+    --dark-secondary-h: #5C6B8E;
+    --secondary: #E1E1E5;
+    --secondary-h: #D7D7DB;
+    --bg-gradient: radial-gradient(127.48% 204.84% at 85.59% 90.56%, rgba(18, 18, 244, 0.5) 0%, rgba(255, 255, 255, 0) 100%), #FFFFFF;
+    --bg-gradient-scd: radial-gradient(circle farthest-corner at 70% 20%, rgba(35, 16, 255, 0.7) 0%, rgba(195, 136, 67, 0.35) 56%, rgba(248, 194, 0, 0) 100%), #FFFFFF;
+    --font: 'Inter', sans-serif;
+    --form-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
+  }
+
+body {
+    background: var(--bg-gradient);
+
+}
+
+
+.profile-details {
+    background: rgba(255, 255, 255, 0.58);
+    position: relative;
+    width: 25%;
+    height: 100%;
+    left: 0px;
+    top: 104px;
+    border: 1px solid #C5C5DA;
+    padding: 20px;
+}
+
+.bio {
+    position: relative;
+    width: 100%;
+    height: fit-content;
+    background: rgba(0, 0, 0, 0.09);
+}
+
+.bio p {
+    padding: 10px;
+}
+
+.artwork-gallery {
+    position:relative;
+    width:75%;
+    text-align: right;
+    height: 100%
+}
