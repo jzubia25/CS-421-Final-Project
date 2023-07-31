@@ -1,25 +1,164 @@
+/*Styling for Sign up, Log in, and Home  */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;600&family=Questrial&family=Rozha+One&display=swap');
+
+:root {
+  --primary: #3E3EF6;
+  --primary-fd: #6962CE;
+  --dark-secondary: #8392B9;
+  --dark-secondary-h: #5C6B8E;
+  --secondary: #E1E1E5;
+  --secondary-h: #D7D7DB;
+  --bg-gradient: radial-gradient(127.48% 204.84% at 85.59% 90.56%, rgba(18, 18, 244, 0.5) 0%, rgba(255, 255, 255, 0) 100%), #FFFFFF;
+  --bg-gradient-scd: radial-gradient(circle farthest-corner at 70% 20%, rgba(35, 16, 255, 0.7) 0%, rgba(195, 136, 67, 0.35) 56%, rgba(248, 194, 0, 0) 100%), #FFFFFF;
+  --font: 'Inter', sans-serif;
+  --form-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
 body {
-    width: 100%;
-    height: 100vh;
-    margin: 0;
-    background-image: url(478513-abstract-colorful-orange-blue-white-pink-red.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    /* background-color: #f0f0f4;
-    color: #070707; */
-  }
+  font-family: var(--font);
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(478513-abstract-colorful-orange-blue-white-pink-red.jpg);
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.fd-container {
+  background: var(--bg-gradient-scd);
+  border-radius: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 320px;
+  min-height: 370px;
+  gap: 10px;
+  padding: 20px;
+  margin: 20px;
+}
+
+.fd-container p {
+  font-size: 14px;
+}
+
+.fd-container form {
+  width: 100%;
+}
+
 label {
-    display: block;
-    margin: 0.5rem 0;
-  }
-h1, p {
-    margin: 1em auto;
-    text-align: center;
-  }
-form {
-    margin: 0 auto;
-    max-width: 500px;
-    min-width: 300px;
-    width: 60vw;
-    background-color: rgb(218, 218, 223);
-  }
+  display: block;
+  margin: 0.5rem 0;
+}
+
+h1 {
+  text-align: center;
+  font-size: 24px;
+}
+
+input:not(:last-child) {
+  width: 75%;
+  background-color: rgb(254, 254, 254, 22%);
+  color: #585B65;
+  outline: none;
+  border-radius: 45px;
+  border: 1px solid #D9D9D9;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+}
+
+
+.createAccount {
+  color: rgb(6, 6, 106, 66%);
+}
+
+.custom-button {
+  background-color: var(--dark-secondary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.custom-button:hover {
+  background-color: var(--dark-secondary-h);
+}
+
+
+.artwork-info {
+  display: flex;
+  width: 200px;
+  height: 64px;
+  padding: 8px;
+  border-radius: 34px;
+  background-color: rgb(144, 144, 144, 32%);
+  font-size: 12px;
+  gap: 8px;
+  position: fixed;
+  bottom: 22px;
+  right: 16px;
+}
+
+.artwork-info .user {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.artist-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+/*Styles specific to home page*/
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+}
+
+.home-buttons button {
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.home-buttons button:first-child {
+  background-color: #6962CE;
+}
+
+.home-buttons button:first-child:hover {
+  background-color: #5F58C4;
+}
+
+.home-buttons button:nth-child(2) {
+  color: #343435;
+  background-color: var(--secondary);
+}
+
+.home-buttons button:nth-child(2):hover {
+  background-color: var(--secondary-h);
+}

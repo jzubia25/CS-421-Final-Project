@@ -6,18 +6,31 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='registrationstyles.css') }}" />
     </head>
     <body>
-        <h1>New Account</h1>
-        <p></p>
-        <form method="POST">
-            {{form.hidden_tag()}}
-            {{form.userName(placeholder="Email Address")}}
-            <br>
-            {{form.password(placeholder="Password", type="password")}}
-            <br>
-            {{form.submit()}}
-        </form>
-        {% if error %}
-        <p>{{ error}}</p>
-        {% endif %}
+        <main>
+            <div class="fd-container">
+                <img src="{{ url_for('static', filename='ArtVision_Logo.svg')}}" width="80" alt="Logo">
+                <h1>Login to Your Account</h1>
+                <form method="POST">
+                    {{form.hidden_tag()}}
+                    <br>
+                    {{form.userName(placeholder="Email Address")}}
+                    <br>
+                    {{form.password(placeholder="Password", type="password")}}
+                    <br>
+                    {{form.submit(class="custom-button")}}
+                </form>
+                {% if error %}
+                <p>{{ error}}</p>
+                {% endif %}
+                <p>Not a member yet? <a class="createAccount" href="{{url_for('register')}}">Create an Account</a></p>
+              </div>
+          <div class="artwork-info">
+            <img class="user" src="{{ url_for('static', filename='ArtVision_Logo.svg')}}">
+            <div class="artist-details">
+            <p>Artowrk title</p>
+            <p>by Artist</p>
+          </div>
+          </div>
+        </main>
       </body>
 </html>
