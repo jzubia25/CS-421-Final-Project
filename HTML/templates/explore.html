@@ -19,14 +19,16 @@
         <div class="artwork-gallery">
             <h2>ArtVision Gallery</h2>
             <div class="artwork-grid">
+                {% for artwork in artworks %}
                 <!-- Display the sitewide artworks here -->
                 <!-- Grab random/popular artwork from within a certain time period -->
                 <!-- Example of a single artwork thumbnail -->
                 <div class="artwork-thumbnail">
-                    <a href="link-to-individual-artwork-page">
-                        <img src="path-to-artwork-thumbnail" alt="Artwork Title">
+                    <a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">
+                        <img src="{{ artwork.url }}" alt="{{ artwork.title }}">
                     </a>
                 </div>
+                {% endfor %}    
             </div>
         </div>
     </section>

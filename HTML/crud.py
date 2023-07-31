@@ -4,17 +4,25 @@ import boto3
 
 # ###
 # GRAB ACCESS_KEY and SECRET_KEY FROM GITHUB. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
-ACCESS_KEY =
-SECRET_KEY =
+
 AWS_REGION = "us-east-2"
 
-def delete_photo_from_s3(photo_url):
+
+client = boto3.client(
+    's3',
+    aws_access_key_id=ACCESS_KEY,
+    aws_secret_access_key=SECRET_KEY,
+    region_name=AWS_REGION
+)
+
+
+def delete_photo_from_s3(photo_url, user_id):
     if not photo_url:
         return
 
     # Extract the filename from the photo_url
     filename = photo_url.split("/")[-1]
-
+    userName = artwork_url.split("/")[-2]
     # Create a Boto3 client for S3
     client = boto3.client(
         's3',
@@ -22,26 +30,28 @@ def delete_photo_from_s3(photo_url):
         aws_secret_access_key=SECRET_KEY,
         region_name=AWS_REGION
     )
-    s3 = boto3.resource(        
-        's3',
-        aws_access_key_id=ACCESS_KEY,
-        aws_secret_access_key=SECRET_KEY,
-        region_name=AWS_REGION
-    )
+
+    # s3 = boto3.resource(        
+    #     's3',
+    #     aws_access_key_id=ACCESS_KEY,
+    #     aws_secret_access_key=SECRET_KEY,
+    #     region_name=AWS_REGION
+    # )
     # Currently not working!!!
     try:
-        client.delete_object(Bucket="artvisionbucket", Key="profilephoto/" + filename)
-        s3.Object("artvisionbucket", "profilephoto/" + filename).delete()
+        client.delete_object(Bucket="artvisionbucket", Key="profilephoto/"+ str(user.userName) + "/" +filename)
+        # s3.Object("artvisionbucket", "profilephoto/" + filename).delete()
         print(f"Photo {filename} deleted from S3 bucket")
     except Exception as e:
         print(f"Error deleting photo {filename} from S3 bucket: {e}")
 
-def delete_artwork_from_s3(artwork_url):
+def delete_artwork_from_s3(artwork_url, user_id):
     if not artwork_url:
         return
 
     # Extract the filename from the artwork_url
     filename = artwork_url.split("/")[-1]
+    userName = artwork_url.split("/")[-2]
 
     # Create a Boto3 client for S3
     client = boto3.client(
@@ -52,7 +62,7 @@ def delete_artwork_from_s3(artwork_url):
     )
 
     try:
-        client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + "bham.jpg")
+        client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ filename)
         print(f"Artwork {filename} deleted from S3 bucket")
     except Exception as e:
         print(f"Error deleting artwork {filename} from S3 bucket: {e}")
@@ -62,14 +72,14 @@ with app.app_context():
 
     all_users = User.query.all()
     for user in all_users:
-        delete_photo_from_s3(user.profilePhotoLink)
+        # delete_photo_from_s3(user.profilePhotoLink)
         db.session.delete(user)
         print(user.profilePhotoLink)
         print(f"User {user.userName} deleted")
 
         artworks = Artwork.query.filter_by(user_id=user.id).all()
         for artwork in artworks:
-            delete_artwork_from_s3(artwork.url)
+            # delete_artwork_from_s3(artwork.url)
             db.session.delete(artwork)
 
         # Delete the user

@@ -34,6 +34,7 @@
                 <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
                 <!-- <a href="{{ url_for('userProfile', user_id=user.id )}}">Upload New Art</a> -->
                 <a href="{{ url_for('sellingPage', user_id=user.id ) }}">Sell Your Art</a>
+                <a href="{{ url_for('deletePage', user_id=user.id ) }}">Delete Art</a>
                 {% endif %}
             </div>
         </div>

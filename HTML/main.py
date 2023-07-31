@@ -16,8 +16,7 @@ from werkzeug.utils import secure_filename
 
 # ###
 # GRAB ACCESS_KEY and SECRET_KEY FROM GITHUB. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
-ACCESS_KEY =
-SECRET_KEY =
+
 AWS_REGION = "us-east-2"
 
 #artvisionbucket
@@ -78,6 +77,7 @@ class UploadForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
+
 #Selling Form inherits from UploadForm
 class SellingForm(UploadForm):
     price = DecimalField('Price', validators=[DataRequired()])
@@ -135,6 +135,7 @@ with app.app_context():
     db.create_all()
 
 success = False # Login variable
+
 
 @app.route('/')
 def index():
@@ -204,11 +205,11 @@ def add():
         aws_secret_access_key = SECRET_KEY,
         region_name=AWS_REGION
         )
-    client.upload_file(filename,"artvisionbucket", "profilephoto/" +filename)
+    client.upload_file(filename,"artvisionbucket", "profilephoto/"+ username + "/" +filename)
     url = client.generate_presigned_url("get_object",
         Params={
             "Bucket":"artvisionbucket",
-            "Key":"profilephoto/"+ filename
+            "Key":"profilephoto/"+ username + "/" +filename
         },
         ExpiresIn=3600)
 
@@ -248,9 +249,21 @@ def userProfile(user_id):
 #     else:
 #         return redirect(url_for('error404'))
 
-@app.route('/explore', methods = ['GET', 'POST'])
+@app.route('/explore')
 def explore():
-    return render_template('explore.html')
+    artworks = Artwork.query.all()
+    return render_template('explore.html',artworks=artworks)
+
+@app.route('/artwork/<int:artwork_id>')
+def artworkDetails(artwork_id):
+    artwork = Artwork.query.get(artwork_id)
+    if not artwork:
+        # Handle the case if the artwork with the given ID doesn't exist
+        # For example, you can return an error page or redirect to the Explore page
+        return render_template('error.html', message='Artwork not found.')
+
+    return render_template('artwork_details.html', artwork=artwork)
+
 
 #Upload File Page 
 @app.route('/uploadPage/<int:user_id>', methods = ['GET', 'POST'])
@@ -283,7 +296,7 @@ def addArt(user_id):
     url = client.generate_presigned_url("get_object",
         Params={
             "Bucket":"artvisionbucket",
-            "Key":"artgallery/"+ filename
+            "Key":"artgallery/" +str(user.userName)+"/"+ filename
         },
         ExpiresIn=3600)
     os.remove(filename)
@@ -324,6 +337,34 @@ def sellingPage(user_id):
             return 'Artwork saved as draft'
     return render_template('selling.html', user=user, form=form)
 
+#Upload File Page 
+@app.route('/deletePage/<int:user_id>', methods = ['GET', 'POST'])
+def deletePage(user_id):
+    user = User.query.get(user_id)
+    artworks = Artwork.query.filter_by(user_id=user_id).all()
+    return render_template('delete.html', user=user, user_id=user_id, artworks=artworks)
+
+@app.route("/deleteArt/<int:user_id>", methods = ["POST"])
+def deleteArt(user_id):
+    user = User.query.get(user_id)
+    artworksSelected = request.form.getlist("artworkToDelete")
+
+    for artwork_id in artworksSelected:
+        artwork = Artwork.query.get(artwork_id)
+        if artwork:
+            client = boto3.client(
+                's3',
+                aws_access_key_id=ACCESS_KEY,
+                aws_secret_access_key=SECRET_KEY,
+                region_name=AWS_REGION
+            )
+            client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ filename)
+            de.session.delete(artwork)
+    # Need query to find and delete art from database
+
+    db.session.commit()
+    return redirect(url_for('userProfile', user_id=user_id))
+
 @app.route('/error404')
 def error404():
     return render_template ('error404.html')
@@ -335,8 +376,8 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0',debug=True)
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)
+    # app.run(debug=True)
 
 #home page or domain is locally represented as http://127.0.0.1:5000/
 # to create multiple pages we will use decorators;
@@ -347,6 +388,8 @@ if __name__ == '__main__':
 """
 HTML <input type="file">
 https://www.w3schools.com/tags/att_input_type_file.asp#:~:text=The%20%3Cinput%20type%3D%22file,tag%20for%20best%20accessibility%20practices!
-
+Flask HTML loops
+https://www.geeksforgeeks.org/python-using-for-loop-in-flask/#
+https://stackoverflow.com/questions/45167508/flask-template-for-loop-iteration-keyvalue
 
 """
