@@ -15,7 +15,7 @@ from werkzeug.utils import secure_filename
 
 
 # ###
-# GRAB ACCESS_KEY and SECRET_KEY FROM GITHUB. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
+# GRAB ACCESS_KEY and SECRET_KEY FROM DISCORD. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
 
 AWS_REGION = "us-east-2"
 
@@ -212,7 +212,7 @@ def add():
     client = boto3.client(
         's3',
         aws_access_key_id = ACCESS_KEY,
-        aws_secret_access_key = SECRET_ACCESS_KEY ,
+        aws_secret_access_key = SECRET_KEY ,
         region_name=AWS_REGION
         )
     client.upload_file(filename,"artvisionbucket", "profilephoto/"+ username + "/" +filename)
@@ -302,7 +302,7 @@ def addArt(user_id):
     client = boto3.client(
         's3',
         aws_access_key_id= ACCESS_KEY,
-        aws_secret_access_key= SECRET_ACCESS_KEY,
+        aws_secret_access_key= SECRET_KEY,
         region_name=AWS_REGION
     )
 
@@ -370,7 +370,7 @@ def deleteArt(user_id):
             client = boto3.client(
                 's3',
                 aws_access_key_id= ACCESS_KEY,
-                aws_secret_access_key= SECRET_ACCESS_KEY,
+                aws_secret_access_key= SECRET_KEY,
                 region_name=AWS_REGION
             )
             client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ filename)
@@ -386,7 +386,8 @@ def error404():
 
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
+    # session.pop('logged_in', None)
+    session['logged_in'] = False
     session.pop('user_id', None)
     return redirect(url_for('index'))
 
