@@ -3,6 +3,7 @@ ArtVision: A Collaborative E-Commerce Art Gallery Platform. Our team is developi
 
 
 # ACCESS_KEY SECRET_KEY and AWS_REGION
+# PLEASE READ CAREFULLY
 
 Please follow the instructions below for setting up the keys:
 
