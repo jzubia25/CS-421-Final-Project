@@ -12,12 +12,16 @@ from flask_migrate import Migrate
 from sqlalchemy import LargeBinary, or_
 import boto3
 from werkzeug.utils import secure_filename
+import random
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # ###
 # GRAB ACCESS_KEY and SECRET_KEY FROM DISCORD. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
-
-AWS_REGION = "us-east-2"
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+AWS_REGION = os.getenv("AWS_REGION")
 
 
 #artvisionbucket
@@ -125,7 +129,7 @@ class RegistrationForm(FlaskForm):
     password = StringField(validators = [DataRequired()])
     confirmPassword = StringField(validators = [DataRequired()])
     userName = StringField(validators = [DataRequired()]) 
-    profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png']), FileSize(max_size=2 * 1024 * 1024, message='No photos larger than 2MB.')])
+    profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png']), FileSize(max_size=2 * 1024 * 1024, message='No photos larger than 2MB.'),DataRequired()])
     bio = TextAreaField()
     pronouns = SelectField('Choose your pronouns', choices=[('option1', 'she/her'),('option2', 'he/him'), ('option3', 'they/them'), ('option4', 'she/they'), ('option5', 'he/they'), ('option6', 'any pronouns')])
     title = SelectField('Choose a title', choices=[('title1', 'Professional'), ('title2', 'Student'), ('title3', 'Hobbyist')])
@@ -259,7 +263,7 @@ def loginPage():
 def register():
     return render_template("register.html")
 
-
+# Adds
 @app.route("/add", methods = ["POST"])
 def add():
     genericPhotoLink = 'image/profile_photo.jpeg'
@@ -293,6 +297,10 @@ def add():
     if password != confirmpassword:
         error = "Passwords do not match."
         return render_template('register.html', error=error)
+    
+    # if ' ' in filename:
+    #     error = "photo name cannot contain a space."
+    #     return render_template('register.html', error=error)        
 
     f.save(secure_filename(filename))
 
@@ -350,10 +358,12 @@ def userProfile(user_id):
 def explore():
     if (session['logged_in'] == True):
         artworks = Artwork.query.all()
+        random.shuffle(artworks)
         user = User.query.get(session['user_id'])
         return render_template('explore.html', artworks=artworks, user=user, userLoggedIn = True)
     else:
         artworks = Artwork.query.all()
+        random.shuffle(artworks)
         return render_template('explore.html',artworks=artworks, userLoggedIn = False)
 
 @app.route('/artwork/<int:artwork_id>', methods=["GET", "POST"])
