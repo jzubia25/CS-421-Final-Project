@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{artwork.title}}</title>
+    <title>{{artwork.title}} by {{artist.userName}}</title>
     <!-- Add your CSS file link here -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 </head>
@@ -21,25 +21,41 @@
                 <!-- You can use a loop to generate the artwork thumbnails -->
                 <!-- Example of a single artwork thumbnail -->
                 <div class="full-img">
-                    <!--placeholder img-->
-                    <img src="{{ url_for('static', filename='ArtVision_Logo.svg')}}">
                     <a href="{{ artwork.url }}">
                         <img src="{{ artwork.url }}" alt="{{ artwork.title }}">
                     </a>
+                </div>
 
-                    <div class="info">
-                        <!--placeholder img-->
-                        <img class="user-pic" src="{{ url_for('static', filename='ArtVision_Logo.svg')}}">
-                        <div class="details">
-                            <p>by Artist</p>
-                            <p>{{artwork.description}}</p>
-                            <p>{{artwork.price}}</p>
-                            <p>{{artwork.status}}</p>                           
-                          </div>
+                <div class="info">
+                    <img class="user-pic"  src="{{ artist.profilePhotoLink }}" alt="profile pic">
+                    <div class="details">
+                        <h3>{{artwork.title}}</h3>
+                        <p>by {{artist.userName}}</p>
+                        <p>{{artwork.description}}</p>
+                        <p>Published {{artwork.uploadDate.strftime("%B %d, %Y")}}</p>                       
                     </div>
-                </div>                   
-                    
-        </div>
+                </div>
+
+                <div>
+                    <h4>Buy a print?</h4>
+                    <p>{{artwork.price}}</p>
+                    <p>{{artwork.status}}</p>    
+                </div>
+        </div>              
+        
+        <!-- Comment Section -->
+        <form class="ui form" action="/artwork/{{artwork.id}}" method="post" enctype="multipart/form-data">
+            <img src="{{user.profilePhotoLink}}" alt="{{user.userName}} profile picture">
+            <input type="text" name="text" placeholder="Add a new comment...">
+            <button class="ui blue button custom-button" type="submit">Comment</button>
+        </form>
+            
+        {% for comment in comments %}
+            <p>{{comment.author}} says: {{comment.text}}
+            {% if user.userName == comment.author %}
+                <a href="{{ url_for('deleteComment', comment_id=comment.id, artwork_id=artwork.id)}}" class="ui blue button custom-button">Delete</a>
+            {% endif %}
+        {% endfor %}
 
     <!-- Footer -->
     <footer>

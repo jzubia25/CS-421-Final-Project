@@ -21,9 +21,8 @@ body {
     background: rgba(255, 255, 255, 0.58);
     position: relative;
     width: 25%;
-    height: 100%;
+    height: 100vh;
     left: 0px;
-    top: 104px;
     border: 1px solid #C5C5DA;
     padding: 20px;
 }
@@ -43,7 +42,7 @@ body {
     position: relative;
     width: 75%;
     text-align: right;
-    height: 100%
+    height: 100%;
 }
 
 .profile-details img {
