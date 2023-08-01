@@ -17,7 +17,6 @@
     <!-- User Profile Section -->
     {% block content %}
     {% if isUsersProfile %}
-            <a href="{{ url_for('logout') }}">Sign Out</a>
             <a href="{{ url_for('deleteAccount') }}">Delete Account</a>
             <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
             <!-- <a href="{{ url_for('userProfile', user_id=user.id )}}">Upload New Art</a> -->

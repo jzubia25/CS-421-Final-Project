@@ -3,8 +3,32 @@
 
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='registrationstyles.css') }}" />
     <title>ArtVision</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='registrationstyles.css') }}" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script>
+        //Array of images which you want to show: Use path you want.
+        var images= {{all_art|tojson}};
+        index = 0
+        console.log(images.length)
+        for (url in images) {
+            console.log(images[index]);
+            index++;
+        }
+        
+        var nextimage=0;
+        doSlideshow();
+
+        function doSlideshow(){
+            if(nextimage>=images.length){nextimage=0;}
+            $('body')
+            .css('background-image','url("'+images[Math.floor(Math.random() * images.length)]+'")')
+            .fadeIn(500,function(){
+                setTimeout(doSlideshow,1000);
+            });
+        }
+
+        </script>
 </head>
 
 <body>
@@ -14,8 +38,8 @@
             <h1>ArtVision</h1>
             <p><em>See the world in new colors</em></p>
             <div class="home-buttons">
-                <button type="buttons" class="btn btn-primary" onclick="window.location.href='{{ url_for('loginPage') }}';">Login</button>
-                <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('register') }}';">Sign Up</button><!-- Needs to be updated to Sign Up page -->
+                <button type="buttons" class="btn btn-primary" onclick="window.location.href='{{ url_for('register') }}';">Create an Account</button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('loginPage') }}';">Log In</button><!-- Needs to be updated to Sign Up page -->
             </div>
             <p><a href="{{url_for('explore')}}">Continue wihout an Account</a></p>
           </div>
