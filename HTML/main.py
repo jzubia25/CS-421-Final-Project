@@ -51,6 +51,67 @@ def passwordValidation(PWD):
         return True
     else:
         return False
+def delete_photo_from_s3(photo_url):
+    if not photo_url:
+        return
+    url_parts = photo_url.split("/")
+
+    # Get the elements we need from the URL parts
+    userName = url_parts[4]
+    file_name = url_parts[-1]
+    file_name_parts = file_name.split("?")
+    fileName = file_name_parts[0]
+
+    # print("User name:", userName)
+    # print("File name:", fileName)
+  
+    # Create a Boto3 client for S3
+    client = boto3.client(
+        's3',
+        aws_access_key_id=ACCESS_KEY,
+        aws_secret_access_key=SECRET_KEY,
+        region_name=AWS_REGION
+    )
+
+    # s3 = boto3.resource(        
+    #     's3',
+    #     aws_access_key_id=ACCESS_KEY,
+    #     aws_secret_access_key=SECRET_KEY,
+    #     region_name=AWS_REGION
+    # )
+    # Currently not working!!!
+    try:
+        client.delete_object(Bucket="artvisionbucket", Key="profilephoto/"+ userName + "/" +fileName)
+        # s3.Object("artvisionbucket", "profilephoto/" + filename).delete()
+        print(f"Photo {fileName} deleted from S3 bucket")
+    except Exception as e:
+        print(f"Error deleting photo {fileName} from S3 bucket: {e}")
+
+
+def delete_artwork_from_s3(artwork_url):
+    if not artwork_url:
+        return
+    
+    url_parts = artwork_url.split("/")
+
+    # Get the elements we need from the URL parts
+    userName = url_parts[4]
+    file_name = url_parts[-1]
+    file_name_parts = file_name.split("?")
+    fileName = file_name_parts[0]
+    # Create a Boto3 client for S3
+    client = boto3.client(
+        's3',
+        aws_access_key_id=ACCESS_KEY,
+        aws_secret_access_key=SECRET_KEY,
+        region_name=AWS_REGION
+    )
+
+    try:
+        client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ fileName)
+        print(f"Artwork {fileName} deleted from S3 bucket")
+    except Exception as e:
+        print(f"Error deleting artwork {fileName} from S3 bucket: {e}")
 
 class LoginForm(FlaskForm):
     userIdentity = StringField(validators = [DataRequired()])
@@ -320,23 +381,6 @@ def addArt(user_id):
     db.session.commit()
     return redirect(url_for('userProfile', user_id=user_id))
 
-# @app.route('/uploadPage/<int:user_id>', methods = ['GET', 'POST'])
-# def uploadPage(user_id):
-#     user = User.query.get(user_id)
-
-#     form = UploadForm()
-#     if form.validate_on_submit():
-#         if form.submit.data:
-#             # Save the form data as 'Published'
-#             f = form.fileinput.data
-#             filename = secure_filename(f.filename)
-#             artwork_url = "https://artvisionbucket/" + filename
-#             return 'Artwork saved'
-#         elif form.saveDraft.data:
-#             # Save the form data as 'draft'
-#             return 'Artwork saved as draft'
-#     return render_template('upload.html', user=user, form=form)
-
 #Selling Page
 @app.route('/sellingPage/<int:user_id>', methods=['GET', 'POST'])
 def sellingPage(user_id):
@@ -359,21 +403,16 @@ def deletePage(user_id):
     artworks = Artwork.query.filter_by(user_id=user_id).all()
     return render_template('delete.html', user=user, user_id=user_id, artworks=artworks)
 
+# Delete art page
 @app.route("/deleteArt/<int:user_id>", methods = ["POST"])
 def deleteArt(user_id):
     user = User.query.get(user_id)
     artworksSelected = request.form.getlist("artworkToDelete")
-
+    userName = user.userName
     for artwork_id in artworksSelected:
         artwork = Artwork.query.get(artwork_id)
         if artwork:
-            client = boto3.client(
-                's3',
-                aws_access_key_id= ACCESS_KEY,
-                aws_secret_access_key= SECRET_KEY,
-                region_name=AWS_REGION
-            )
-            client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ filename)
+            delete_artwork_from_s3(artwork.url)
             db.session.delete(artwork)
     # Need query to find and delete art from database
 
@@ -393,8 +432,22 @@ def logout():
 
 @app.route('/deleteAccount')
 def deleteAccount():
-    User.query.filter_by(id=session['user_id']).delete()
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+    artworks = Artwork.query.filter_by(user_id=user_id).all()
+
+    for artwork in artworks:
+        delete_artwork_from_s3(artwork.url)
+
+    for artwork in artworks:
+        db.session.delete(artwork)
+
+    db.session.delete(user)  
     db.session.commit()
+
+    session['logged_in'] = False
+    session.pop('user_id', None)
+
     return redirect(url_for('explore'))
 
 if __name__ == '__main__':
