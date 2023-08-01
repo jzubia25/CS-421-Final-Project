@@ -6,7 +6,8 @@ import boto3
 # GRAB ACCESS_KEY and SECRET_KEY FROM GITHUB. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
 
 AWS_REGION = "us-east-2"
-
+ACCESS_KEY ="AKIA6IBZYP2JHX7TYHQ2"
+SECRET_KEY ="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"
 
 client = boto3.client(
     's3',
@@ -111,13 +112,15 @@ with app.app_context():
 
 
     db.session.commit()
-    # List all Users
+    # # List all Users
     all_Users = User.query.all()
     print(all_Users)
 
     # List all Art
     all_Art = Artwork.query.all()
     print(all_Art)
+    # for art in all_Art:
+    #     print(art.url)
 
     # new_User = User('John', 'James','j@gmail.com','JJsmoove','jjsmoove123','I like basketball','profile_photo.jpeg')
     # db.session.add(new_User)
@@ -152,3 +155,22 @@ with app.app_context():
     # print(new_User.userName)
     # print(new_User.password)    
     # print(new_User.profilePhotoLink)
+
+# NOTE CODE BELOW IS FOR DELETING A SINGLE USER
+    # user = User.query.filter_by(userName="Ambition0516").first()
+
+    # if user:
+    #     # Step 2: Delete the user's profile photo from S3
+    #     delete_photo_from_s3(user.profilePhotoLink)
+
+    #     # Step 3: Delete the user's artwork
+    #     artworks = Artwork.query.filter_by(user_id=user.id).all()
+    #     for artwork in artworks:
+    #         delete_artwork_from_s3(artwork.url)
+    #         db.session.delete(artwork)
+
+    #     # Step 4: Delete the user
+    #     db.session.delete(user)
+
+    #     # Step 5: Commit the changes to the database
+    #     db.session.commit()

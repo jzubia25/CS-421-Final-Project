@@ -18,8 +18,7 @@ from werkzeug.utils import secure_filename
 # GRAB ACCESS_KEY and SECRET_KEY FROM DISCORD. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
 
 AWS_REGION = "us-east-2"
-ACCESS_KEY = 
-SECRET_ACCESS_KEY = 
+
 
 #artvisionbucket
 
@@ -309,7 +308,7 @@ def add():
             "Bucket":"artvisionbucket",
             "Key":"profilephoto/"+ username + "/" +filename
         },
-        ExpiresIn=3600)
+       )
 
     os.remove(filename)
 
@@ -414,7 +413,7 @@ def addArt(user_id):
             "Bucket":"artvisionbucket",
             "Key":"artgallery/" +str(user.userName)+"/"+ filename
         },
-        ExpiresIn=3600)
+        )
     os.remove(filename)
     newArt = Artwork(title =title, description=description, price=price, status=status, url=url, user_id=user_id, uploadDate=datetime.date.today())
     db.session.add(newArt)
@@ -457,7 +456,7 @@ def deleteArt(user_id):
                 client = boto3.client(
                     's3',
                     aws_access_key_id= ACCESS_KEY,
-                    aws_secret_access_key= SECRET_ACCESS_KEY,
+                    aws_secret_access_key= SECRET_KEY,
                     region_name=AWS_REGION
                 )
                 client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + user.userName +"/"+ filename)
