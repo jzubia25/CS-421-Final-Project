@@ -65,7 +65,7 @@ nav a:hover {
 }
 
 footer {
-    background-color: #333;
+    background-color: #240e75;
     color: #fff;
     text-align: center;
     padding: 10px 0;
@@ -91,6 +91,7 @@ footer {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    height: 100%;
 }
 
 .upload-page h1,
@@ -226,4 +227,16 @@ input[type="file"]::file-selector-button:hover {
 .user-pic {
     width: 60px;
     height: 60px;
+}
+
+.comment {
+    text-align: center;
+}
+
+.comment img {
+    width: 50px;
+}
+
+.comment-section {
+    text-align: center;
 }
