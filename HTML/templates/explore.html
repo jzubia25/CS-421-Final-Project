@@ -24,9 +24,12 @@
                 <!-- Example of a single artwork thumbnail -->
                 <div class="artwork-thumbnail">
                     <a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">
-                        <img src="{{ artwork.url }}" alt="{{ artwork.title }}">
-                    </a>
+                        <img src="{{ artwork.url }}" alt="{{ artwork.title }}"> 
+                   </a>
                 </div>
+                <div class="artwork-details">
+                    <p><a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">{{artwork.title}}</a> by <a href="{{ url_for('userProfile', user_id=user.id) }}">{{artwork.artist}}</a></p>
+                    </div>
                 {% endfor %}    
             </div>
         </div>

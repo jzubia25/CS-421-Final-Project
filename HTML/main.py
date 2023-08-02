@@ -140,6 +140,7 @@ class UploadForm(FlaskForm):
     title = StringField('Title', validators = [DataRequired(), Length(max=150)])
     fileInput = FileField('Upload File', validators = [FileRequired(), FileAllowed(['png', 'jpg', 'jpeg', 'gif'])])
     description = TextAreaField('Artwork Description', validators = [DataRequired(), Length(max=400)])
+    category = SelectField('Select artwork category', validators = [DataRequired()], choices=[('option1', 'Traditional Art'),('option2', 'Digital Art'), ('option3', 'Mixed Media'), ('option4', 'Graphic Design'), ('option5', 'Photography'), ('option6', 'Comics'), ('option7', 'Fan Art'), ('option8', 'Other')])
     saveDraft = SubmitField('Save Draft')
     submit = SubmitField('Submit')
 
@@ -188,19 +189,23 @@ class Artwork(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(80), nullable = False)
     description = db.Column(db.String(120), nullable = False)
+    category = db.Column(db.String(32))
     price = db.Column(db.Float, nullable = True)
     status = db.Column(db.String(20), nullable = True)
     url = db.Column(db.Text)
+    artist = db.Column(db.String(32))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
     uploadDate = db.Column(db.DateTime)
 
 
-    def __init__(self, title, description, price, status, url, user_id, uploadDate):
+    def __init__(self, title, description, category, price, status, url, artist, user_id, uploadDate):
         self.title = title
         self.description = description
+        self.category = category
         self.price = price
         self.status = status
         self.url = url
+        self.artist = artist
         self.user_id = user_id
         self.uploadDate = uploadDate
 
@@ -370,9 +375,11 @@ def explore():
 def artworkDetails(artwork_id):
     form=CommentForm()
     artwork = Artwork.query.get(artwork_id)
+    print(artwork_id)
     artist = User.query.get(artwork.user_id)
     user = User.query.get(session['user_id'])
-    comments = Comment.query.filter(artwork_id==artwork.id).all()
+    comments = Comment.query.filter_by(artwork_id = artwork.id).all()
+    print(artwork.id)
 
     if not artwork:
         # Handle the case if the artwork with the given ID doesn't exist
@@ -385,7 +392,7 @@ def artworkDetails(artwork_id):
 
         db.session.add(newComment)
         db.session.commit()
-        return render_template ('artworkDetails.html', artwork=artwork, user=user, artist=artist, form=form, comments=comments)
+        return redirect(url_for('artworkDetails', artwork=artwork, user=user, artist=artist, form=form, comments=comments, artwork_id=artwork_id))
 
     return render_template('artworkDetails.html', artwork=artwork, user=user, artist=artist, form=form, comments=comments)
 
@@ -399,9 +406,11 @@ def uploadPage(user_id):
 @app.route("/addArt/<int:user_id>", methods = ["POST"])
 def addArt(user_id):
     user = User.query.get(user_id)
+    artist = user.userName
 
     title = request.form.get("title")
     description = request.form.get("description")
+    category = request.form.get("category")
     price = request.form.get("price")
     status = request.form.get("status")
 
@@ -425,7 +434,7 @@ def addArt(user_id):
         },
         )
     os.remove(filename)
-    newArt = Artwork(title =title, description=description, price=price, status=status, url=url, user_id=user_id, uploadDate=datetime.date.today())
+    newArt = Artwork(title =title, description=description, category=category, price=price, status=status, url=url, user_id=user_id, artist=artist, uploadDate=datetime.date.today())
     db.session.add(newArt)
     db.session.commit()
     return redirect(url_for('userProfile', user_id=user_id))
