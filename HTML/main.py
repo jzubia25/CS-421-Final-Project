@@ -12,12 +12,17 @@ from flask_migrate import Migrate
 from sqlalchemy import LargeBinary, or_
 import boto3
 from werkzeug.utils import secure_filename
+import random
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # ###
 # GRAB ACCESS_KEY and SECRET_KEY FROM DISCORD. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+AWS_REGION = os.getenv("AWS_REGION")
 
-AWS_REGION = "us-east-2"
 
 #artvisionbucket
 
@@ -51,6 +56,67 @@ def passwordValidation(PWD):
         return True
     else:
         return False
+def delete_photo_from_s3(photo_url):
+    if not photo_url:
+        return
+    url_parts = photo_url.split("/")
+
+    # Get the elements we need from the URL parts
+    userName = url_parts[4]
+    file_name = url_parts[-1]
+    file_name_parts = file_name.split("?")
+    fileName = file_name_parts[0]
+
+    # print("User name:", userName)
+    # print("File name:", fileName)
+  
+    # Create a Boto3 client for S3
+    client = boto3.client(
+        's3',
+        aws_access_key_id=ACCESS_KEY,
+        aws_secret_access_key=SECRET_KEY,
+        region_name=AWS_REGION
+    )
+
+    # s3 = boto3.resource(        
+    #     's3',
+    #     aws_access_key_id=ACCESS_KEY,
+    #     aws_secret_access_key=SECRET_KEY,
+    #     region_name=AWS_REGION
+    # )
+    # Currently not working!!!
+    try:
+        client.delete_object(Bucket="artvisionbucket", Key="profilephoto/"+ userName + "/" +fileName)
+        # s3.Object("artvisionbucket", "profilephoto/" + filename).delete()
+        print(f"Photo {fileName} deleted from S3 bucket")
+    except Exception as e:
+        print(f"Error deleting photo {fileName} from S3 bucket: {e}")
+
+
+def delete_artwork_from_s3(artwork_url):
+    if not artwork_url:
+        return
+    
+    url_parts = artwork_url.split("/")
+
+    # Get the elements we need from the URL parts
+    userName = url_parts[4]
+    file_name = url_parts[-1]
+    file_name_parts = file_name.split("?")
+    fileName = file_name_parts[0]
+    # Create a Boto3 client for S3
+    client = boto3.client(
+        's3',
+        aws_access_key_id=ACCESS_KEY,
+        aws_secret_access_key=SECRET_KEY,
+        region_name=AWS_REGION
+    )
+
+    try:
+        client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ fileName)
+        print(f"Artwork {fileName} deleted from S3 bucket")
+    except Exception as e:
+        print(f"Error deleting artwork {fileName} from S3 bucket: {e}")
 
 class LoginForm(FlaskForm):
     userIdentity = StringField(validators = [DataRequired()])
@@ -63,7 +129,7 @@ class RegistrationForm(FlaskForm):
     password = StringField(validators = [DataRequired()])
     confirmPassword = StringField(validators = [DataRequired()])
     userName = StringField(validators = [DataRequired()]) 
-    profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png']), FileSize(max_size=2 * 1024 * 1024, message='No photos larger than 2MB.')])
+    profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png']), FileSize(max_size=2 * 1024 * 1024, message='No photos larger than 2MB.'),DataRequired()])
     bio = TextAreaField()
     pronouns = SelectField('Choose your pronouns', choices=[('option1', 'she/her'),('option2', 'he/him'), ('option3', 'they/them'), ('option4', 'she/they'), ('option5', 'he/they'), ('option6', 'any pronouns')])
     title = SelectField('Choose a title', choices=[('title1', 'Professional'), ('title2', 'Student'), ('title3', 'Hobbyist')])
@@ -78,11 +144,14 @@ class UploadForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
-
 #Selling Form inherits from UploadForm
 class SellingForm(UploadForm):
     price = DecimalField('Price', validators=[DataRequired()])
 
+
+class CommentForm(FlaskForm):
+    text = StringField()
+    submit = SubmitField("Comment")
 
 class User(db.Model):
     __tablename__="users"
@@ -137,6 +206,24 @@ class Artwork(db.Model):
 
     def __repr__(self):
         return f"<Artwork {self.title}>"
+    
+
+class Comment(db.Model):
+    __tablename__="comments"
+    id = db.Column(db.Integer, primary_key=True)
+    artwork_id = db.Column(db.Integer)
+    text = db.Column(db.String(140))
+    author = db.Column(db.String(32))
+    timestamp = db.Column(db.DateTime(), index=True)
+
+    def __init__(self, artwork_id, text, author, timestamp):
+        self.artwork_id = artwork_id
+        self.text = text
+        self.author = author
+        self.timestamp = timestamp
+
+    def __repr__(self):
+        return f"<Comment {self.text}>"
 
 with app.app_context():
     # Create the tables (if not already created)
@@ -147,7 +234,11 @@ success = False # Login variable
 
 @app.route('/')
 def index():
-    return render_template('homepage.html')
+    all_art = []
+    for art in Artwork.query.all():
+        all_art.append(art.url)
+
+    return render_template('homepage.html', all_art=all_art)
 
 @app.route('/loginPage', methods = ['GET', 'POST'])
 def loginPage():
@@ -156,7 +247,6 @@ def loginPage():
         userIdentity = form.userIdentity.data
         passwordInput = form.password.data
 
-        #user = User.query.filter_by(userName=userIdentity).first()
         user = User.query.filter((User.userName==userIdentity) | (User.email==userIdentity)).first()
         if user and user.password==passwordInput:
             global success 
@@ -173,6 +263,7 @@ def loginPage():
 def register():
     return render_template("register.html")
 
+# Adds
 @app.route("/add", methods = ["POST"])
 def add():
     genericPhotoLink = 'image/profile_photo.jpeg'
@@ -206,6 +297,10 @@ def add():
     if password != confirmpassword:
         error = "Passwords do not match."
         return render_template('register.html', error=error)
+    
+    # if ' ' in filename:
+    #     error = "photo name cannot contain a space."
+    #     return render_template('register.html', error=error)        
 
     f.save(secure_filename(filename))
 
@@ -221,7 +316,7 @@ def add():
             "Bucket":"artvisionbucket",
             "Key":"profilephoto/"+ username + "/" +filename
         },
-        ExpiresIn=3600)
+       )
 
     os.remove(filename)
 
@@ -234,7 +329,7 @@ def add():
     # return redirect("/")
 
 
-@app.route('/userProfile/<int:user_id>')
+@app.route('/user/<int:user_id>')
 def userProfile(user_id): 
     if success and 'user_id' in session and session['user_id'] == user_id: # 1st person profile visit
         user = User.query.get(user_id)
@@ -263,21 +358,36 @@ def userProfile(user_id):
 def explore():
     if (session['logged_in'] == True):
         artworks = Artwork.query.all()
+        random.shuffle(artworks)
         user = User.query.get(session['user_id'])
         return render_template('explore.html', artworks=artworks, user=user, userLoggedIn = True)
     else:
         artworks = Artwork.query.all()
+        random.shuffle(artworks)
         return render_template('explore.html',artworks=artworks, userLoggedIn = False)
 
-@app.route('/artwork/<int:artwork_id>')
+@app.route('/artwork/<int:artwork_id>', methods=["GET", "POST"])
 def artworkDetails(artwork_id):
+    form=CommentForm()
     artwork = Artwork.query.get(artwork_id)
+    artist = User.query.get(artwork.user_id)
+    user = User.query.get(session['user_id'])
+    comments = Comment.query.filter(artwork_id==artwork.id).all()
+
     if not artwork:
         # Handle the case if the artwork with the given ID doesn't exist
         # For example, you can return an error page or redirect to the Explore page
         return render_template('error.html', message='Artwork not found.')
+    
+    if request.method == 'POST':
+        text = request.form.get("text")
+        newComment = Comment(artwork_id=artwork_id, text=text, author=user.userName, timestamp=datetime.date.today())
 
-    return render_template('artworkDetails.html', artwork=artwork)
+        db.session.add(newComment)
+        db.session.commit()
+        return render_template ('artworkDetails.html', artwork=artwork, user=user, artist=artist, form=form, comments=comments)
+
+    return render_template('artworkDetails.html', artwork=artwork, user=user, artist=artist, form=form, comments=comments)
 
 
 #Upload File Page 
@@ -313,29 +423,12 @@ def addArt(user_id):
             "Bucket":"artvisionbucket",
             "Key":"artgallery/" +str(user.userName)+"/"+ filename
         },
-        ExpiresIn=3600)
+        )
     os.remove(filename)
     newArt = Artwork(title =title, description=description, price=price, status=status, url=url, user_id=user_id, uploadDate=datetime.date.today())
     db.session.add(newArt)
     db.session.commit()
     return redirect(url_for('userProfile', user_id=user_id))
-
-# @app.route('/uploadPage/<int:user_id>', methods = ['GET', 'POST'])
-# def uploadPage(user_id):
-#     user = User.query.get(user_id)
-
-#     form = UploadForm()
-#     if form.validate_on_submit():
-#         if form.submit.data:
-#             # Save the form data as 'Published'
-#             f = form.fileinput.data
-#             filename = secure_filename(f.filename)
-#             artwork_url = "https://artvisionbucket/" + filename
-#             return 'Artwork saved'
-#         elif form.saveDraft.data:
-#             # Save the form data as 'draft'
-#             return 'Artwork saved as draft'
-#     return render_template('upload.html', user=user, form=form)
 
 #Selling Page
 @app.route('/sellingPage/<int:user_id>', methods=['GET', 'POST'])
@@ -357,28 +450,34 @@ def sellingPage(user_id):
 def deletePage(user_id):
     user = User.query.get(user_id)
     artworks = Artwork.query.filter_by(user_id=user_id).all()
-    return render_template('delete.html', user=user, user_id=user_id, artworks=artworks)
+    return render_template('deleteArt.html', user=user, user_id=user_id, artworks=artworks)
 
-@app.route("/deleteArt/<int:user_id>", methods = ["POST"])
+@app.route("/deleteArt/<int:user_id>", methods = ["GET","POST"])
 def deleteArt(user_id):
     user = User.query.get(user_id)
     artworksSelected = request.form.getlist("artworkToDelete")
 
-    for artwork_id in artworksSelected:
-        artwork = Artwork.query.get(artwork_id)
-        if artwork:
-            client = boto3.client(
-                's3',
-                aws_access_key_id= ACCESS_KEY,
-                aws_secret_access_key= SECRET_KEY,
-                region_name=AWS_REGION
-            )
-            client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ filename)
-            db.session.delete(artwork)
+    
+    if request.method == 'POST':
+        for artwork_id in artworksSelected:
+            artwork = Artwork.query.get(artwork_id)
+            filename = (artwork.url).partition(user.userName)[2]
+            if artwork:
+                client = boto3.client(
+                    's3',
+                    aws_access_key_id= ACCESS_KEY,
+                    aws_secret_access_key= SECRET_KEY,
+                    region_name=AWS_REGION
+                )
+                client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + user.userName +"/"+ filename)
+                db.session.delete(artwork)
+                
+                db.session.commit()
+        return redirect(url_for('userProfile', user_id=user_id))
+    else:
+        return (redirect(url_for('explore')))
     # Need query to find and delete art from database
 
-    db.session.commit()
-    return redirect(url_for('userProfile', user_id=user_id))
 
 @app.route('/error404')
 def error404():
@@ -393,9 +492,36 @@ def logout():
 
 @app.route('/deleteAccount')
 def deleteAccount():
-    User.query.filter_by(id=session['user_id']).delete()
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+    artworks = Artwork.query.filter_by(user_id=user_id).all()
+
+    for artwork in artworks:
+        delete_artwork_from_s3(artwork.url)
+
+    for artwork in artworks:
+        db.session.delete(artwork)
+
+    db.session.delete(user)  
     db.session.commit()
+
+    session['logged_in'] = False
+    session.pop('user_id', None)
+
     return redirect(url_for('explore'))
+
+
+@app.route('/deleteComment/<int:comment_id>/<int:artwork_id>')
+def deleteComment(comment_id, artwork_id):
+    form=CommentForm()
+    artwork = Artwork.query.get(artwork_id)
+    artist = User.query.get(artwork.user_id)
+    user = User.query.get(session['user_id'])
+    Comment.query.filter_by(id=comment_id).delete()
+    comments = Comment.query.filter(artwork_id==artwork.id).all()
+
+    db.session.commit()
+    return redirect(url_for('artworkDetails', artwork=artwork, user=user, artist=artist, form=form, comments=comments, artwork_id=artwork_id))
 
 #Routes for user galleries
 @app.route('/<option>/<int:user_id>')

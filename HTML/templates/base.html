@@ -59,17 +59,17 @@
                       <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link"  href="{{ url_for('userProfile', user_id=user.id ) }}" ><img src="{{ user.profilePhotoLink }}" width="30"></a>
+                      <a class="nav-link"  href="{{ url_for('userProfile', user_id=user.id) }}" ><img src="{{ user.profilePhotoLink }}" width="30"></a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                      <a class="nav-link"  href="#" >Sign Up</a>
+                      <a class="nav-link"  href="{{ url_for('register') }}" >Sign Up</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link"  href="#" >Log In</a>
+                      <a class="nav-link"  href="{{ url_for('loginPage') }}" >Log In</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link"  href="#" ><img src="{{ url_for('static', filename='img/Profile Photo.png')}}" alt="profile pic" width="30"></a>
+                      <a class="nav-link"  href="#" ><img src="../../HTML/image/Profile Photo.png" alt="profile pic" width="30"></a>
                     </li>
                     {% endif %}
                   </ul>
@@ -82,4 +82,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
     </body>
 </html>
-

@@ -9,29 +9,30 @@
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   </head>
 
-  <body class="upload-page gradient-bg">
-      <header>
-        {% extends "base.html" %}
-      </header>
+<body class="upload-page gradient-bg">
+  <header>
+    {% extends "base.html" %}
+  </header>
   {% block content %}
-    <main class="main-content">
-      <div class="wrapper">
+  <main class="main-content">
+    <div class="wrapper">
       <h1>Hi {{ user.name }}, submit your artwork</h1>
       <div class="form-container">
-      <form class="ui form" action="{{ url_for('addArt', user_id=user_id) }}" method="POST" enctype="multipart/form-data">
+        <form class="ui form" action="{{ url_for('addArt', user_id=user_id) }}" method="POST"
+          enctype="multipart/form-data">
           <div>
-          <label>Title</label>
-          <br />
-          <input type="text" name="title" /> 
+            <label>Title</label>
+            <br />
+            <input type="text" name="title" />
           </div>
           <div>
             <input type="file" name="file" class="fileInput" />
           </div>
           <div>
-          <label>Description</label> <br />
-          <textarea id="description" name="description" rows="5" cols="40"></textarea>
+            <label>Description</label> <br />
+            <textarea id="description" name="description" rows="5" cols="40"></textarea>
           </div>
-        <!-- <div>
+          <!-- <div>
           <label>price</label>
           <br />
           <input
@@ -43,17 +44,17 @@
           />
         </div> -->
 
-        <!-- <div>
+          <!-- <div>
           <label>Status</label>
           <br />
           <input type="text" name="status" placeholder="status" />
         </div> -->
-        <button class="btn custom-button" type="submit">Submit</button>
-      </form>
-    
-      <div class="preview">
-        Preview
-        <div class="image-preview"></div>
+          <button class="btn custom-button" type="submit">Submit</button>
+        </form>
+
+        <div class="preview">
+          Preview
+          <div class="image-preview"></div>
         </div>
       </div>
       <div>

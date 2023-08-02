@@ -5,7 +5,9 @@ import boto3
 # ###
 # GRAB ACCESS_KEY and SECRET_KEY FROM GITHUB. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
 
-AWS_REGION = "us-east-2"
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+AWS_REGION = os.getenv("AWS_REGION")
 
 
 client = boto3.client(
@@ -14,15 +16,28 @@ client = boto3.client(
     aws_secret_access_key=SECRET_KEY,
     region_name=AWS_REGION
 )
+    # s3 = boto3.resource(        
+    #     's3',
+    #     aws_access_key_id=ACCESS_KEY,
+    #     aws_secret_access_key=SECRET_KEY,
+    #     region_name=AWS_REGION
+    # )
+    # Currently not working!!!
 
-
-def delete_photo_from_s3(photo_url, user_id):
+def delete_photo_from_s3(photo_url):
     if not photo_url:
         return
+    url_parts = photo_url.split("/")
 
-    # Extract the filename from the photo_url
-    filename = photo_url.split("/")[-1]
-    userName = artwork_url.split("/")[-2]
+    # Get the elements we need from the URL parts
+    userName = url_parts[4]
+    file_name = url_parts[-1]
+    file_name_parts = file_name.split("?")
+    fileName = file_name_parts[0]
+
+    # print("User name:", userName)
+    # print("File name:", fileName)
+  
     # Create a Boto3 client for S3
     client = boto3.client(
         's3',
@@ -39,20 +54,24 @@ def delete_photo_from_s3(photo_url, user_id):
     # )
     # Currently not working!!!
     try:
-        client.delete_object(Bucket="artvisionbucket", Key="profilephoto/"+ str(user.userName) + "/" +filename)
+        client.delete_object(Bucket="artvisionbucket", Key="profilephoto/"+ userName + "/" +fileName)
         # s3.Object("artvisionbucket", "profilephoto/" + filename).delete()
-        print(f"Photo {filename} deleted from S3 bucket")
+        print(f"Photo {fileName} deleted from S3 bucket")
     except Exception as e:
-        print(f"Error deleting photo {filename} from S3 bucket: {e}")
+        print(f"Error deleting photo {fileName} from S3 bucket: {e}")
 
-def delete_artwork_from_s3(artwork_url, user_id):
+
+def delete_artwork_from_s3(artwork_url):
     if not artwork_url:
         return
+    
+    url_parts = artwork_url.split("/")
 
-    # Extract the filename from the artwork_url
-    filename = artwork_url.split("/")[-1]
-    userName = artwork_url.split("/")[-2]
-
+    # Get the elements we need from the URL parts
+    userName = url_parts[4]
+    file_name = url_parts[-1]
+    file_name_parts = file_name.split("?")
+    fileName = file_name_parts[0]
     # Create a Boto3 client for S3
     client = boto3.client(
         's3',
@@ -62,24 +81,30 @@ def delete_artwork_from_s3(artwork_url, user_id):
     )
 
     try:
-        client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ filename)
-        print(f"Artwork {filename} deleted from S3 bucket")
+        client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ fileName)
+        print(f"Artwork {fileName} deleted from S3 bucket")
     except Exception as e:
-        print(f"Error deleting artwork {filename} from S3 bucket: {e}")
+        print(f"Error deleting artwork {fileName} from S3 bucket: {e}")
 
 # Now, run the database operations within the Flask application context
+# Reference:
+# https://stackoverflow.com/questions/3140779/how-to-delete-files-from-amazon-s3-bucket
 with app.app_context():
 
+# NOTE THIS CODE BELOW WILL RESET THE DATABASE. COMMENT OUT PARTS IF NECCESSARY
     all_users = User.query.all()
     for user in all_users:
-        # delete_photo_from_s3(user.profilePhotoLink)
-        db.session.delete(user)
+        delete_photo_from_s3(user.profilePhotoLink)
         print(user.profilePhotoLink)
-        print(f"User {user.userName} deleted")
+        # db.session.delete(user)
+        # print(user.profilePhotoLink)
+        # print(f"User {user.userName} deleted")
 
         artworks = Artwork.query.filter_by(user_id=user.id).all()
         for artwork in artworks:
-            # delete_artwork_from_s3(artwork.url)
+            delete_artwork_from_s3(artwork.url)
+            print(user.profilePhotoLink)
+            delete_artwork_from_s3(artwork.url)
             db.session.delete(artwork)
 
         # Delete the user
@@ -88,13 +113,15 @@ with app.app_context():
 
 
     db.session.commit()
-    # List all Users
+    # # List all Users
     all_Users = User.query.all()
     print(all_Users)
 
     # List all Art
     all_Art = Artwork.query.all()
     print(all_Art)
+    # for art in all_Art:
+    #     print(art.url)
 
     # new_User = User('John', 'James','j@gmail.com','JJsmoove','jjsmoove123','I like basketball','profile_photo.jpeg')
     # db.session.add(new_User)
@@ -129,3 +156,22 @@ with app.app_context():
     # print(new_User.userName)
     # print(new_User.password)    
     # print(new_User.profilePhotoLink)
+
+# NOTE CODE BELOW IS FOR DELETING A SINGLE USER
+    # user = User.query.filter_by(userName="Ambition0516").first()
+
+    # if user:
+    #     # Step 2: Delete the user's profile photo from S3
+    #     delete_photo_from_s3(user.profilePhotoLink)
+
+    #     # Step 3: Delete the user's artwork
+    #     artworks = Artwork.query.filter_by(user_id=user.id).all()
+    #     for artwork in artworks:
+    #         delete_artwork_from_s3(artwork.url)
+    #         db.session.delete(artwork)
+
+    #     # Step 4: Delete the user
+    #     db.session.delete(user)
+
+    #     # Step 5: Commit the changes to the database
+    #     db.session.commit()

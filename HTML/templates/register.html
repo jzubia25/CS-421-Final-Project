@@ -13,12 +13,13 @@
         <div class="register fd-container">
             <a href="{{url_for('index')}}"><img src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}" width="80" alt="Logo"></a>
             <h1>Create an Account</h1>
+            
             <form class="ui form" action="/add" method="post" enctype="multipart/form-data">
                     <input type="text" name="name" placeholder="Name"> <br>
                     <input type="text" name="email" placeholder="Email"> <br>
                     <input type="text" name="username" placeholder="Username"> <br>
-                    <input type="text" name="password" placeholder="Password"> <br>
-                    <input type="text" name="confirmpassword" placeholder="Confirm password"> <br>
+                    <input type="password" name="password" placeholder="Password"> <br>
+                    <input type="password" name="confirmpassword" placeholder="Confirm password"> <br>
                     <!--Move bio and profile photo to user profile page-->
                     <input type="text" name="bio" placeholder="Bio"> <br>
 
@@ -37,9 +38,9 @@
                     <div class="title">
                         <p><label for="title">Select your title:</label>
                         <select id="title" name="title">
-                            <option value="professional">Professional</option>
-                            <option value="student">Student</option>
-                            <option value="hobbyist">Hobbyist</option>
+                            <option value="Professional">Professional</option>
+                            <option value="Student">Student</option>
+                            <option value="Hobbyist">Hobbyist</option>
                         </select>
                         </p>
                     </div>
@@ -47,11 +48,12 @@
                     <br>
                 <button class="ui blue button custom-button" type="submit">Sign Up</button>
             </form>
+            {% if error %}
+            <p>{{ error}}</p>
+            {% endif %}
             <p>Already have an account? <a class="createAccount" href="{{url_for('loginPage')}}">Log in</a></p>
         </div>
-            <!-- {% if error %}
-            <p>{{ error }}</p>
-            {% endif %} -->
+            
           <div class="artwork-info">
             <img class="user" src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}">
             <div class="artist-details">
