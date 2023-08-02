@@ -6,12 +6,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>ArtVision | Register
         </title> 
-        <link rel="stylesheet" href="{{ url_for('static', filename='registrationstyles.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/registrationstyles.css') }}">
     </head>
     <body>
         <main>
         <div class="register fd-container">
-            <a href="{{url_for('index')}}"><img src="{{ url_for('static', filename='ArtVision_Logo.svg')}}" width="80" alt="Logo"></a>
+            <a href="{{url_for('index')}}"><img src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}" width="80" alt="Logo"></a>
             <h1>Create an Account</h1>
             <form class="ui form" action="/add" method="post" enctype="multipart/form-data">
                     <input type="text" name="name" placeholder="Name"> <br>
@@ -53,7 +53,7 @@
             <p>{{ error }}</p>
             {% endif %} -->
           <div class="artwork-info">
-            <img class="user" src="{{ url_for('static', filename='ArtVision_Logo.svg')}}">
+            <img class="user" src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}">
             <div class="artist-details">
             <p>Artwork title</p>
             <p>by Artist</p>

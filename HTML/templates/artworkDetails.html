@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{artwork.title}}</title>
     <!-- Add your CSS file link here -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
 </head>
 <body class="details-page gradient-bg-l">
     <!-- Navbar (You can create a separate header file and include it on all pages) -->
@@ -22,14 +22,14 @@
                 <!-- Example of a single artwork thumbnail -->
                 <div class="full-img">
                     <!--placeholder img-->
-                    <img src="{{ url_for('static', filename='ArtVision_Logo.svg')}}">
+                    <img src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}">
                     <a href="{{ artwork.url }}">
                         <img src="{{ artwork.url }}" alt="{{ artwork.title }}">
                     </a>
 
                     <div class="info">
                         <!--placeholder img-->
-                        <img class="user-pic" src="{{ url_for('static', filename='ArtVision_Logo.svg')}}">
+                        <img class="user-pic" src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}">
                         <div class="details">
                             <p>by Artist</p>
                             <p>{{artwork.description}}</p>

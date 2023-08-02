@@ -5,67 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{user.userName}} ({{user.name}}) | ArtVision</title>
     <!-- Add your CSS file link here -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
 
 </head>
-<body>
+<body class="user-profile">
     <!-- Navbar (You can create a separate header file and include it on all pages) -->
-    <header>
         {% extends "base.html" %}
-    </header>
-
     <!-- User Profile Section -->
     {% block content %}
-    {% if isUsersProfile %}
-            <a href="{{ url_for('logout') }}">Sign Out</a>
-            <a href="{{ url_for('deleteAccount') }}">Delete Account</a>
-            <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
-            <!-- <a href="{{ url_for('userProfile', user_id=user.id )}}">Upload New Art</a> -->
-            <a href="{{ url_for('sellingPage', user_id=user.id ) }}">Sell Your Art</a>
-            <a href="{{ url_for('deletePage', user_id=user.id ) }}">Delete Art</a>
-
-    {% endif %}
-    <section class="profile">
-            
+    <div class="profile">
+            <!--Profile personal details-->
             <div class="profile-details">
-                <h1>{{ user.userName }} </h1>
-                <img src="{{ user.profilePhotoLink }}" alt="profile pic">
-                <!-- Display the user's profile picture here -->
-                <!-- You can use an <img> tag or background-image in CSS -->
-                <!-- Display other user details like bio, location, etc. here -->
-                <p>{{ user.name }}</p>
-                <p>{{ user.pronouns}}</p>
-                <p>{{ user.title}}</p>
+                <h1 class="user-name">{{ user.userName }} </h1>
+                <div class="user-intro">
+                    <div class="user-img-container">
+                        <img src="{{ user.profilePhotoLink }}" alt="profile pic">
+                    </div>
+                    <div>
+                        <p>{{ user.name }}</p>
+                        <p>{{ user.pronouns}}</p>
+                        <p>{{ user.title}}</p>
+                    </div>
+                </div>
                 <p>About Me</p>
                 <div class="bio">
                     <p>{{ user.bio }}</p>
                 </div>
                 <p>Member Since: {{ (user.registrationDate).strftime("%B %d, %Y")}}</p>
+
+                <!--options if is users profile-->
+                {% if isUsersProfile %}
+                <div>
+                    <a href="{{ url_for('logout') }}">Sign Out</a>
+                    <a href="{{ url_for('deleteAccount') }}">Delete Account</a>
+                    <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
+                    <!-- <a href="{{ url_for('userProfile', user_id=user.id )}}">Upload New Art</a> -->
+                    <a href="{{ url_for('sellingPage', user_id=user.id ) }}">Sell Your Art</a>
+                    <a href="{{ url_for('deletePage', user_id=user.id ) }}">Delete Art</a>
+                </div>
+                {% endif %}
             </div>
-    </section>
 
         <!-- Artwork Gallery Section -->
-        <section>
         <div class="artwork-gallery">
-            <h2>Artwork Gallery</h2>
+            <nav>
+                <a href="#" class="user-data" onclick="loadContent('gallery')" value="{{user.id}}">Gallery</a>
+                <a href="#" class="user-data" onclick="loadContent('shop')" value="{{user.id}}" >Shop</a>
+                <a href="#" class="user-data" onclick="loadContent('favorites')" value="{{user.id}}">Favorites</a>
+            </nav>
             <div class="artwork-grid">
-                {% for artwork in artworks %}
-                <!-- Display the user's artworks here -->
-                <!-- You can use a loop to generate the artwork thumbnails -->
-                <!-- Example of a single artwork thumbnail -->
-                <div class="artwork-thumbnail">
-                    <h3>{{ artwork.title}}</h3>
-                    <a href="{{ artwork.url }}">
-                        <img src="{{ artwork.url }}" alt="{{ artwork.title }}">
-                    </a>
-                    <p>{{artwork.description}}</p>
-                    <p>{{artwork.price}}</p>
-                    <p>{{artwork.status}}</p>
+                <!--Artworks will populate here-->
+         
                 </div>
-                {% endfor %}
+      
             </div>
         </div>
-    </section>
 
     <!-- Footer -->
     <footer>
@@ -73,7 +67,7 @@
     </footer>
 
     <!-- Add your JavaScript file link here if needed -->
-    <script src="scripts.js"></script>
+    <script src="{{ url_for('static', filename='js/user_data_fetch.js') }}"></script>
     {% endblock %}
 </body>
 </html>

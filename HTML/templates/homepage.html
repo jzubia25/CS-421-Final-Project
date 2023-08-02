@@ -3,14 +3,14 @@
 
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='registrationstyles.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/registrationstyles.css') }}" />
     <title>ArtVision</title>
 </head>
 
 <body>
     <main>
         <div class="fd-container">
-            <img src="{{ url_for('static', filename='ArtVision_Logo.svg')}}" width="80" alt="Logo">
+            <img src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}" width="80" alt="Logo">
             <h1>ArtVision</h1>
             <p><em>See the world in new colors</em></p>
             <div class="home-buttons">
@@ -20,7 +20,7 @@
             <p><a href="{{url_for('explore')}}">Continue wihout an Account</a></p>
           </div>
           <div class="artwork-info">
-            <img class="user" src="{{ url_for('static', filename='ArtVision_Logo.svg')}}">
+            <img class="user" src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}">
             <div class="artist-details">
             <p>Artwork title</p>
             <p>by Artist</p>

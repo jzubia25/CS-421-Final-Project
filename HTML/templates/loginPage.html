@@ -3,12 +3,12 @@
     <head>
         <meta charset="utf-8">
         <title>ArtVision | Login</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='registrationstyles.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/registrationstyles.css') }}" />
     </head>
     <body>
         <main>
             <div class="fd-container">
-              <a href="{{url_for('index')}}"><img src="{{ url_for('static', filename='ArtVision_Logo.svg')}}" width="80" alt="Logo"></a>
+              <a href="{{url_for('index')}}"><img src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}" width="80" alt="Logo"></a>
                 <h1>Login to Your Account</h1>
                 <form method="POST">
                     {{form.hidden_tag()}}
@@ -25,7 +25,7 @@
                 <p>Not a member yet? <a class="createAccount" href="{{url_for('register')}}">Create an Account</a></p>
               </div>
           <div class="artwork-info">
-            <img class="user" src="{{ url_for('static', filename='ArtVision_Logo.svg')}}">
+            <img class="user" src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}">
             <div class="artist-details">
             <p>Artwork title</p>
             <p>by Artist</p>

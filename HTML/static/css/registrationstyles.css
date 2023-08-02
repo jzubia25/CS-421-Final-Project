@@ -29,7 +29,7 @@ body {
   width: 100%;
   min-height: 100vh;
   margin: 0;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(478513-abstract-colorful-orange-blue-white-pink-red.jpg);
+  background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(../img/478513-abstract-colorful-orange-blue-white-pink-red.jpg);
   background-size: cover;
   background-attachment: fixed;
   background-repeat: no-repeat;
@@ -83,7 +83,8 @@ input:not(:last-child) {
   margin-bottom: 10px;
 }
 
-.pronouns, .title {
+.pronouns,
+.title {
   background-color: rgb(254, 254, 254, 22%);
   color: #585B65;
   outline: none;

@@ -1,7 +1,7 @@
 import os
 import re
 import datetime
-from flask import Flask, render_template, session, redirect, url_for, request
+from flask import Flask, render_template, session, redirect, url_for, request, jsonify
 from flask_wtf import FlaskForm
 from wtforms import (StringField, SubmitField, BooleanField, DateTimeField,
                      RadioField, SelectField, TextAreaField, DecimalField)
@@ -396,6 +396,20 @@ def deleteAccount():
     User.query.filter_by(id=session['user_id']).delete()
     db.session.commit()
     return redirect(url_for('explore'))
+
+#Routes for user galleries
+@app.route('/<option>/<int:user_id>')
+def gallery(option, user_id):
+    user = User.query.get(user_id)
+    if option == 'gallery':
+        artworks = Artwork.query.filter_by(user_id=user_id).all()
+        serialized_artworks = {artwork.id: {"id": artwork.id, "title": artwork.title, "price": artwork.price, "url": artwork.url} for artwork in artworks}
+        return jsonify(serialized_artworks)
+    # elif option == 'favorites':
+    #     #get favorites
+    # elif option == 'shop':
+    #     #get selling items
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
