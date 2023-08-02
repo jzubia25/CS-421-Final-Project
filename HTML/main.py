@@ -311,13 +311,15 @@ def add():
         region_name=AWS_REGION
         )
     client.upload_file(filename,"artvisionbucket", "profilephoto/"+ username + "/" +filename)
-    url = client.generate_presigned_url("get_object",
-        Params={
-            "Bucket":"artvisionbucket",
-            "Key":"profilephoto/"+ username + "/" +filename
-        },
-       )
-
+    # presigned_url = client.generate_presigned_url("get_object",
+    #     Params={
+    #         "Bucket":"artvisionbucket",
+    #         "Key":"profilephoto/"+ username + "/" +filename
+    #     },
+    #    )
+    bucket_name = "artvisionbucket"
+    s3_key = "profilephoto/" + username + "/" + filename
+    url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
     os.remove(filename)
 
     newUser = User(name=name, email=email, 
@@ -356,14 +358,12 @@ def userProfile(user_id):
 
 @app.route('/explore')
 def explore():
-    if (session['logged_in'] == True):
-        artworks = Artwork.query.all()
-        random.shuffle(artworks)
+    artworks = Artwork.query.all()
+    random.shuffle(artworks)
+    if 'user_id' in session and session['logged_in'] == True:
         user = User.query.get(session['user_id'])
         return render_template('explore.html', artworks=artworks, user=user, userLoggedIn = True)
     else:
-        artworks = Artwork.query.all()
-        random.shuffle(artworks)
         return render_template('explore.html',artworks=artworks, userLoggedIn = False)
 
 @app.route('/artwork/<int:artwork_id>', methods=["GET", "POST"])
@@ -418,12 +418,17 @@ def addArt(user_id):
 
     # Upload the file to S3 bucket
     client.upload_file(filename, "artvisionbucket", "artgallery/" +str(user.userName)+"/"+ filename)
-    url = client.generate_presigned_url("get_object",
-        Params={
-            "Bucket":"artvisionbucket",
-            "Key":"artgallery/" +str(user.userName)+"/"+ filename
-        },
-        )
+    # presigned_url = client.generate_presigned_url("get_object",
+    #     Params={
+    #         "Bucket":"artvisionbucket",
+    #         "Key":"artgallery/" +str(user.userName)+"/"+ filename
+    #     },
+    #     )
+
+    bucket_name = "artvisionbucket"
+    s3_key = f"artgallery/{user.userName}/{filename}"
+    url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
+
     os.remove(filename)
     newArt = Artwork(title =title, description=description, price=price, status=status, url=url, user_id=user_id, uploadDate=datetime.date.today())
     db.session.add(newArt)

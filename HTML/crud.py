@@ -115,11 +115,13 @@ with app.app_context():
     db.session.commit()
     # # List all Users
     all_Users = User.query.all()
-    print(all_Users)
+    for user in all_Users:
+        print(user.profilePhotoLink)
 
     # List all Art
     all_Art = Artwork.query.all()
-    print(all_Art)
+    for art in all_Art:
+        print(art.url)
     # for art in all_Art:
     #     print(art.url)
 
