@@ -4,8 +4,38 @@
         <meta charset="utf-8">
         <title>ArtVision | Login</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/registrationstyles.css') }}" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+        <script>
+          var images = {{all_art|tojson}};
+          var nextImageIndex = 0;
+          var currentImageIndex = -1;
+      
+          console.log(images.length);
+          for (var index in images) {
+              console.log(images[index]);
+          }
+      
+          doSlideshow();
+      
+          function doSlideshow() {
+              if (nextImageIndex >= images.length) {
+                  nextImageIndex = 0;
+              }
+              while (nextImageIndex == currentImageIndex) {
+                  nextImageIndex = Math.floor(Math.random() * images.length);
+              }
+              currentImageIndex = nextImageIndex;
+              var nextImage = images[nextImageIndex++];
+              $("body").removeClass('fadeIn').addClass('fadeOut');
+              setTimeout(function() {
+                  $('body').css('background-image', 'url("' + nextImage + '")');
+                  $("body").removeClass('fadeOut').addClass('fadeIn');
+                  setTimeout(doSlideshow, 5000);
+              }, 1000);
+          }
+      </script>
     </head>
-    <body>
+    <body class= "background">
         <main>
             <div class="fd-container">
               <a href="{{url_for('index')}}"><img src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}" width="80" alt="Logo"></a>
