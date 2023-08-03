@@ -9,7 +9,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import DataRequired, Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import LargeBinary, or_, and_
+from sqlalchemy import LargeBinary, or_, and_, and_
 import boto3
 from werkzeug.utils import secure_filename
 import random
@@ -20,9 +20,11 @@ load_dotenv()
 
 # ###
 # GRAB ACCESS_KEY and SECRET_KEY FROM DISCORD. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
-ACCESS_KEY = os.getenv("ACCESS_KEY")
-SECRET_KEY = os.getenv("SECRET_KEY")
-AWS_REGION = os.getenv("AWS_REGION")
+# ACCESS_KEY = os.getenv("ACCESS_KEY")
+# SECRET_KEY = os.getenv("SECRET_KEY")
+# AWS_REGION = os.getenv("AWS_REGION")
+
+
 
 
 #artvisionbucket
@@ -139,7 +141,7 @@ class RegistrationForm(FlaskForm):
     password = StringField(validators = [DataRequired()])
     confirmPassword = StringField(validators = [DataRequired()])
     userName = StringField(validators = [DataRequired()]) 
-    #profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png']), FileSize(max_size=2 * 1024 * 1024, message='No photos larger than 2MB.'),DataRequired()])
+    ##profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png']), FileSize(max_size=2 * 1024 * 1024, message='No photos larger than 2MB.'),DataRequired()])
     bio = TextAreaField()
     pronouns = SelectField('Choose your pronouns', choices=[('option1', 'she/her'),('option2', 'he/him'), ('option3', 'they/them'), ('option4', 'she/they'), ('option5', 'he/they'), ('option6', 'any pronouns')])
     title = SelectField('Choose a title', choices=[('title1', 'Professional'), ('title2', 'Student'), ('title3', 'Hobbyist')])
@@ -163,6 +165,12 @@ class SellingForm(UploadForm):
 class CommentForm(FlaskForm):
     text = StringField()
     submit = SubmitField("Comment")
+
+def serialize(model):
+    columns = [c.key for c in class_mapper(model.__class__).columns]
+    return dict((c, getattr(model, c)) for c in columns)
+
+#DATABASES
 
 class User(db.Model):
     __tablename__="users"
@@ -206,9 +214,10 @@ class Artwork(db.Model):
     artist = db.Column(db.String(32))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
     uploadDate = db.Column(db.DateTime)
+    shop_item = db.Column(db.Boolean, default=False)
 
 
-    def __init__(self, title, description, category, price, status, url, artist, user_id, uploadDate):
+    def __init__(self, title, description, category, price, status, url, artist, user_id, uploadDate, shop_item):
         self.title = title
         self.description = description
         self.category = category
@@ -218,6 +227,7 @@ class Artwork(db.Model):
         self.artist = artist
         self.user_id = user_id
         self.uploadDate = uploadDate
+        self.shop_item = shop_item
 
     def __repr__(self):
         return f"<Artwork {self.title}>"
@@ -261,10 +271,25 @@ def index():
         "https://images.unsplash.com/photo-1690567614925-eb1954507d87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1858&q=80",
         "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
         "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
+    
+    #all_art_objects = jsonify([art._serialize__ for art in Artwork.query.all()])
+    #[ Artwork.query.filter(Artwork.id).first().__seralize__]
+
+    all_art_objects = []
+    '''
+    serialized_art = [
+        serialize(art)
+        for art in Artwork.query.all()
+    ]
+    '''
+    #all_art_objects = dumps(serialized_art, default = str)
+
     for art in Artwork.query.all():
         all_art.append(art.url)
+        all_art_objects.append(serialize(art))
 
-    return render_template('homepage.html', all_art=all_art)
+
+    return render_template('homepage.html', all_art=all_art, all_art_objects=all_art_objects)
 
 @app.route('/loginPage', methods = ['GET', 'POST'])
 def loginPage():
@@ -282,6 +307,7 @@ def loginPage():
             return redirect(url_for('userProfile', user_id=user.id)) #User's home page
         else:
             error = "Incorrect Login Info"
+    
     all_art = ["https://images.unsplash.com/photo-1690737213782-1e957257abc9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=726&q=80",
     "https://images.unsplash.com/photo-1690509118327-5ee97f3764b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
     "https://images.unsplash.com/photo-1690652067906-f52dcffa0ab9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=80",
@@ -291,8 +317,19 @@ def loginPage():
     "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
     "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
 
+    all_art_objects = []
+    '''
+    serialized_art = [
+        serialize(art)
+        for art in Artwork.query.all()
+    ]
+    '''
+    #all_art_objects = dumps(serialized_art, default = str)
+
     for art in Artwork.query.all():
         all_art.append(art.url)
+        all_art_objects.append(serialize(art))
+
 
     return render_template ('loginPage.html', form=form, error=error if 'error' in locals() else None, all_art=all_art)
 
@@ -307,13 +344,16 @@ def register():
     "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
     "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
 
+
     for art in Artwork.query.all():
         all_art.append(art.url)
+
     return render_template("register.html", all_art=all_art)
 
 # Adds
 @app.route("/add", methods = ["POST"])
 def add():
+    
     genericPhotoLink = 'image/profile_photo.jpeg'
 
     name = request.form.get("name")
@@ -401,7 +441,7 @@ def userProfile(user_id):
 
 @app.route('/explore', methods=["GET", "POST"])
 def explore():
-    artworks = Artwork.query.all()
+    artworks = Artwork.query.filter_by(shop_item=False).all()
     random.shuffle(artworks)
 
     randomArtwork = random.choice(Artwork.query.all())
@@ -460,6 +500,13 @@ def uploadPage(user_id):
     user = User.query.get(user_id)
     return render_template('upload.html', user=user, user_id=user_id, currentUser=user)
 
+#Upload Comission Page 
+@app.route('/sellingPage/<int:user_id>', methods = ['GET', 'POST'])
+def sellingPage(user_id):
+    user = User.query.get(user_id)
+    return render_template('selling.html', user=user, user_id=user_id, currentUser=user)
+
+
 @app.route("/addArt/<int:user_id>", methods = ["POST"])
 def addArt(user_id):
     user = User.query.get(user_id)
@@ -470,6 +517,7 @@ def addArt(user_id):
     category = request.form.get("category")
     price = request.form.get("price")
     status = request.form.get("status")
+    shop_item = "price" in request.form
 
     f = request.files["file"]
     filename = f.filename.split("\\")[-1]
@@ -496,25 +544,11 @@ def addArt(user_id):
     url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
 
     os.remove(filename)
-    newArt = Artwork(title =title, description=description, category=category, price=price, status=status, url=url, user_id=user_id, artist=artist, uploadDate=datetime.date.today())
+    newArt = Artwork(title =title, description=description, category=category, price=price, status=status, url=url, user_id=user_id, artist=artist, uploadDate=datetime.date.today(), shop_item=shop_item)
     db.session.add(newArt)
     db.session.commit()
     return redirect(url_for('userProfile', user_id=user_id))
 
-#Selling Page
-@app.route('/sellingPage/<int:user_id>', methods=['GET', 'POST'])
-def sellingPage(user_id):
-    user = User.query.get(user_id)
-    
-    form = SellingForm()
-    if form.validate_on_submit():
-        if form.submit.data:
-            # Save the form data as 'Published'
-            return 'Artwork saved'
-        elif form.saveDraft.data:
-            # Save the form data as 'draft'
-            return 'Artwork saved as draft'
-    return render_template('selling.html', user=user, currentUser=user, form=form)
 
 #Upload File Page 
 @app.route('/deletePage/<int:user_id>', methods = ['GET', 'POST'])
@@ -601,11 +635,13 @@ def deleteComment(comment_id, artwork_id):
 def gallery(option, user_id):
     user = User.query.get(user_id)
     if option == 'gallery':
-        artworks = Artwork.query.filter_by(user_id=user_id).all()
+        artworks = Artwork.query.filter_by(user_id=user_id, shop_item=False).all()
         serialized_artworks = {artwork.id: {"id": artwork.id, "title": artwork.title, "price": artwork.price, "url": artwork.url} for artwork in artworks}
         return jsonify(serialized_artworks)
-    # elif option == 'favorites':
-    #     #get favorites
+    elif option == 'shop':
+        artworks = Artwork.query.filter_by(user_id=user_id, shop_item=True).all()
+        serialized_artworks = {artwork.id: {"id": artwork.id, "title": artwork.title, "price": artwork.price, "url": artwork.url} for artwork in artworks}
+        return jsonify(serialized_artworks)
     # elif option == 'shop':
     #     #get selling items
 

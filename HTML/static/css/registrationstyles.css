@@ -24,18 +24,29 @@ p {
   margin: 0;
 }
 
+html {
+  height: 100%;
+  width: 100%;
+}
+
 body {
   font-family: var(--font);
+  height:100%;
   width: 100%;
   min-height: 100vh;
   margin: 0;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(../img/478513-abstract-colorful-orange-blue-white-pink-red.jpg);
-  background-size: cover;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#background {
+  height: 100%;
+  align-items: center;
+  background: url(../img/478513-abstract-colorful-orange-blue-white-pink-red.jpg) no-repeat center center fixed;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;  
 }
 
 
@@ -174,14 +185,14 @@ input:not(:last-child) {
   background-color: var(--secondary-h);
 }
 
-body.fadeOut {
+.fadeOut {
   animation-name: fadeOut;
   animation-fill-mode: forwards;
   animation-duration: 1s;
   animation-timing-function: ease-in-out;
 }
 
-body.fadeIn {
+.fadeIn {
   animation-name: fadeIn;
   animation-fill-mode: forwards;
   animation-duration: 1s;

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shope ArtVision</title>
+    <!-- Add your CSS file link here -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+</head>
+<body>
+    <!-- Navbar (You can create a separate header file and include it on all pages) -->
+    <header>
+        {% extends "base.html" %}
+      </header>
+    {% block content %}
+
+        <!-- Artwork Gallery Section -->
+        <div class="artwork-gallery">
+            <h2>ArtVision Gallery</h2>
+            <div class="artwork-grid">
+                {% for artwork in artworks %}
+                <!-- Display the sitewide artworks here -->
+                <!-- Grab random/popular artwork from within a certain time period -->
+                <!-- Example of a single artwork thumbnail -->
+                <div class="artwork-thumbnail">
+                    <a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">
+                        <img src="{{ artwork.url }}" alt="{{ artwork.title }}"> 
+                   </a>
+                   <div class="artwork-details">
+                    <p><a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">{{artwork.title}}</a> by <a href="{{ url_for('userProfile', user_id=user.id) }}">{{artwork.artist}}</a></p>
+                    </div>
+                </div>
+                {% endfor %}    
+            </div>
+        </div>
+
+    <!-- Footer -->
+    <footer>
+        <!-- Your footer content here -->
+    </footer>
+
+    <!-- Add your JavaScript file link here if needed -->
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    {% endblock %}
+</body>
+</html>
