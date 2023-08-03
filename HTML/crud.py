@@ -92,36 +92,49 @@ def delete_artwork_from_s3(artwork_url):
 with app.app_context():
 
 # NOTE THIS CODE BELOW WILL RESET THE DATABASE. COMMENT OUT PARTS IF NECCESSARY
-    all_users = User.query.all()
-    for user in all_users:
-        delete_photo_from_s3(user.profilePhotoLink)
-        print(user.profilePhotoLink)
-        # db.session.delete(user)
-        # print(user.profilePhotoLink)
-        # print(f"User {user.userName} deleted")
+    # all_users = User.query.all()
+    # for user in all_users:
+    #     delete_photo_from_s3(user.profilePhotoLink)
+    #     print(user.profilePhotoLink)
+    #     # db.session.delete(user)
+    #     # print(user.profilePhotoLink)
+    #     # print(f"User {user.userName} deleted")
 
-        artworks = Artwork.query.filter_by(user_id=user.id).all()
-        for artwork in artworks:
-            delete_artwork_from_s3(artwork.url)
-            print(user.profilePhotoLink)
-            delete_artwork_from_s3(artwork.url)
-            db.session.delete(artwork)
+    #     artworks = Artwork.query.filter_by(user_id=user.id).all()
+    #     for artwork in artworks:
+    #         delete_artwork_from_s3(artwork.url)
+    #         print(user.profilePhotoLink)
+    #         delete_artwork_from_s3(artwork.url)
+    #         db.session.delete(artwork)
 
-        # Delete the user
-        db.session.delete(user)
-        print(f"User {user.userName} deleted")
+    #     # Delete the user
+    #     db.session.delete(user)
+    #     print(f"User {user.userName} deleted")
 
 
-    db.session.commit()
-    # # List all Users
+    # db.session.commit()
+    # List all Users
     all_Users = User.query.all()
     for user in all_Users:
-        print(user.profilePhotoLink)
+        print(user.userName)
+        print(user.email)
 
+    userNameCheck = User.query.filter_by(userName="Ambition2015").first()
+    if userNameCheck:
+        userNameCheck.userName = "Ambition0516"
+        artworks = Artwork.query.filter_by(user_id=1).all()
+        for artwork in artworks:
+            url = artwork.url
+            url_parts = url.split("/")
+
+            url_parts[4] = "Ambition0516"
+            newUrl = "/".join(url_parts)
+            artwork.url = newUrl
+        db.session.commit()
     # List all Art
-    all_Art = Artwork.query.all()
-    for art in all_Art:
-        print(art.url)
+    # all_Art = Artwork.query.all()
+    # for art in all_Art:
+    #     print(art.url)
     # for art in all_Art:
     #     print(art.url)
 

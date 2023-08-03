@@ -1,4 +1,4 @@
-//Using built in FileReader API, to create a file preview on the client-side before uploading
+//Using built in FileReader API, to create a file preview on the client-side before uploading.
 document
     .querySelector(".fileInput")
     .addEventListener("change", function (e) {

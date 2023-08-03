@@ -14,6 +14,7 @@ import boto3
 from werkzeug.utils import secure_filename
 import random
 from dotenv import load_dotenv
+import requests # need to pip install requests
 
 load_dotenv()
 
@@ -42,6 +43,14 @@ app.config['SECRET_KEY'] = 'oursecretkey'
 db = SQLAlchemy(app)
 Migrate(app,db)
 
+client = boto3.client(
+    's3',
+    aws_access_key_id = ACCESS_KEY,
+    aws_secret_access_key = SECRET_KEY ,
+    region_name=AWS_REGION
+    )
+
+
 def passwordValidation(PWD):
     regexCapLetter = r'[A-Z]'
     regexLowLetter = r'[a-z]'
@@ -56,6 +65,7 @@ def passwordValidation(PWD):
         return True
     else:
         return False
+
 def delete_photo_from_s3(photo_url):
     if not photo_url:
         return
@@ -71,12 +81,12 @@ def delete_photo_from_s3(photo_url):
     # print("File name:", fileName)
   
     # Create a Boto3 client for S3
-    client = boto3.client(
-        's3',
-        aws_access_key_id=ACCESS_KEY,
-        aws_secret_access_key=SECRET_KEY,
-        region_name=AWS_REGION
-    )
+    # client = boto3.client(
+    #     's3',
+    #     aws_access_key_id=ACCESS_KEY,
+    #     aws_secret_access_key=SECRET_KEY,
+    #     region_name=AWS_REGION
+    # )
 
     # s3 = boto3.resource(        
     #     's3',
@@ -105,12 +115,12 @@ def delete_artwork_from_s3(artwork_url):
     file_name_parts = file_name.split("?")
     fileName = file_name_parts[0]
     # Create a Boto3 client for S3
-    client = boto3.client(
-        's3',
-        aws_access_key_id=ACCESS_KEY,
-        aws_secret_access_key=SECRET_KEY,
-        region_name=AWS_REGION
-    )
+    # client = boto3.client(
+    #     's3',
+    #     aws_access_key_id=ACCESS_KEY,
+    #     aws_secret_access_key=SECRET_KEY,
+    #     region_name=AWS_REGION
+    # )
 
     try:
         client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ fileName)
@@ -342,12 +352,12 @@ def add():
 
     f.save(secure_filename(filename))
 
-    client = boto3.client(
-        's3',
-        aws_access_key_id = ACCESS_KEY,
-        aws_secret_access_key = SECRET_KEY ,
-        region_name=AWS_REGION
-        )
+    # client = boto3.client(
+    #     's3',
+    #     aws_access_key_id = ACCESS_KEY,
+    #     aws_secret_access_key = SECRET_KEY ,
+    #     region_name=AWS_REGION
+    #     )
     client.upload_file(filename,"artvisionbucket", "profilephoto/"+ username + "/" +filename)
     # presigned_url = client.generate_presigned_url("get_object",
     #     Params={
@@ -465,12 +475,12 @@ def addArt(user_id):
     filename = f.filename.split("\\")[-1]
     f.save(secure_filename(filename))
 
-    client = boto3.client(
-        's3',
-        aws_access_key_id= ACCESS_KEY,
-        aws_secret_access_key= SECRET_KEY,
-        region_name=AWS_REGION
-    )
+    # client = boto3.client(
+    #     's3',
+    #     aws_access_key_id= ACCESS_KEY,
+    #     aws_secret_access_key= SECRET_KEY,
+    #     region_name=AWS_REGION
+    # )
 
     # Upload the file to S3 bucket
     client.upload_file(filename, "artvisionbucket", "artgallery/" +str(user.userName)+"/"+ filename)
@@ -565,7 +575,6 @@ def deleteAccount():
     for comment in comments:
         db.session.delete(comment)
 
-
     db.session.delete(user)  
     db.session.commit()
 
@@ -600,6 +609,129 @@ def gallery(option, user_id):
     # elif option == 'shop':
     #     #get selling items
 
+@app.route('/editPage/<int:user_id>', methods = ['GET', 'POST'])
+def editPage(user_id):
+    user = User.query.get(user_id)
+    artworks = Artwork.query.filter_by(user_id=user_id).all()
+    return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user)
+
+@app.route("/editAccount/<int:user_id>", methods = ["GET","POST"])
+def editAccount(user_id):
+    user = User.query.get(user_id)
+    artworks = Artwork.query.filter_by(user_id=user_id).all()
+    update = False
+    
+    email = request.form.get("currentemail")
+    password = request.form.get("currentpassword")
+    username = request.form.get("currentusername")
+
+    newUsername = request.form.get("newusername")
+    confirmNewUsername = request.form.get("confirmnewusername")
+
+    newEmail = request.form.get("newemail")
+    confirmNewEmail = request.form.get("confirmnewemail")
+
+    newPassword = request.form.get("newpassword")
+    confirmNewPassword = request.form.get("confirmnewpassword")
+
+    user = User.query.filter_by(id=user_id).first()
+    passwordInDatabase = user.password
+    emailInDatabase = user.email
+    userNameInDatabase = user.userName
+
+    userNameCheck = User.query.filter_by(userName=newUsername).first()
+    # print(userNameCheck)
+    # checks database for email matching current user.
+    if email != emailInDatabase: 
+        error = "incorrect email"
+        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error) 
+    # checks database for password matching current user.
+    if password != passwordInDatabase:
+        error = "incorrect password"
+        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error)
+    # checks database for username matching current user.
+    if username != userNameInDatabase:
+        error = "incorrect username"
+        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error)
+    # makes sure new email matches.
+    if newEmail and newEmail != confirmNewEmail:
+        error = "new email inputs do not match"
+        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error)
+    # makes sure new username matches.
+    if newUsername and newUsername != confirmNewUsername:
+        error = "new Username inputs do not match"
+        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error)
+    # makes sure new password matches and meet requirements.
+    if newPassword and newPassword != confirmNewPassword and passwordValidation(newPassword)== False:
+        error = "new password inputs do not match or meet password requirements"
+        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error)
+
+    if newUsername and userNameCheck is None:
+        user.userName = newUsername
+
+        # setting up client
+        # client = boto3.client(
+        #     's3',
+        #     aws_access_key_id = ACCESS_KEY,
+        #     aws_secret_access_key = SECRET_KEY ,
+        #     region_name=AWS_REGION
+        #     )
+
+        # transferring profile photo to new userName
+
+        # Saving profile photo
+        response = requests.get(user.profilePhotoLink)
+        url_parts = user.profilePhotoLink.split("/")
+        filename = url_parts[-1]
+
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+
+        # uploading profile photo
+        client.upload_file(filename,"artvisionbucket", "profilephoto/" + user.userName + "/" + filename)
+        
+        bucket_name = "artvisionbucket"
+        s3_key = "profilephoto/" + user.userName + "/" + filename
+        url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
+        user.profilePhotoLink = url
+        client.delete_object(Bucket="artvisionbucket", Key="profilephoto/" + username +"/"+ filename)
+        os.remove(filename)
+
+        for artwork in artworks:
+            url = artwork.url
+            url_parts = url.split("/")
+
+            url_parts[4] = newUsername
+            newUrl = "/".join(url_parts)
+            artwork.url = newUrl
+
+            response = requests.get(url)
+            filename = url_parts[-1]
+
+            with open(filename, 'wb') as f:
+                f.write(response.content)
+
+            client.upload_file(filename,"artvisionbucket", "artgallery/" + user.userName + "/" + filename)
+            bucket_name = "artvisionbucket"
+            s3_key = "artgallery/" + user.userName + "/" + filename
+            url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
+            client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + username +"/"+ filename)
+            os.remove(filename)
+            update = True
+
+    if newEmail:
+        user.email = newEmail
+        update = True
+    if newPassword:
+        user.password = newPassword
+        update = True
+    if update == True:
+        message = "Information updated"
+    if update == False:
+        message = "Information unchanged"
+    db.session.commit()
+    return redirect(url_for('userProfile', user_id=user_id, message=message))
+    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)
