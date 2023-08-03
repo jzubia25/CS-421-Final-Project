@@ -173,3 +173,42 @@ input:not(:last-child) {
 .home-buttons button:nth-child(2):hover {
   background-color: var(--secondary-h);
 }
+
+body.fadeOut {
+  animation-name: fadeOut;
+  animation-fill-mode: forwards;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+}
+
+body.fadeIn {
+  animation-name: fadeIn;
+  animation-fill-mode: forwards;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+}
+
+body.background{
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+@keyframes fadeOut {
+  0% {opacity: 1;}
+  100% {opacity: 0;}
+}
+
+@keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+.slideshow-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
