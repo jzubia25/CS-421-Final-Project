@@ -9,7 +9,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired, FileSize
 from wtforms.validators import DataRequired, Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import LargeBinary, or_
+from sqlalchemy import LargeBinary, or_, and_
 import boto3
 from werkzeug.utils import secure_filename
 import random
@@ -361,15 +361,32 @@ def userProfile(user_id):
 #     else:
 #         return redirect(url_for('error404'))
 
-@app.route('/explore')
+@app.route('/explore', methods=["GET", "POST"])
 def explore():
     artworks = Artwork.query.all()
     random.shuffle(artworks)
+
     if 'user_id' in session and session['logged_in'] == True:
         user = User.query.get(session['user_id'])
-        return render_template('explore.html', artworks=artworks, user=user, userLoggedIn = True)
+
+        if request.method == "POST":
+            search = request.form.get("search_term")
+            print(search)
+            artworks = Artwork.query.filter((Artwork.title.like("%"+search+"%")) | (Artwork.artist.like("%"+search+"%")) | (Artwork.description.like("%"+search+"%"))).all()
+            
+            random.shuffle(artworks)
+            return render_template('explore.html', artworks=artworks, user=user, userLoggedIn = True)
+
+        else:
+            return render_template('explore.html', artworks=artworks, user=user, userLoggedIn = True)
     else:
-        return render_template('explore.html',artworks=artworks, userLoggedIn = False)
+        if request.method == "POST":
+            search = request.form.get("search_term")
+            searched_artworks = Artwork.query.filter((Artwork.title.like("%"+search+"%")) | (Artwork.artist.like("%"+search+"%")) | (Artwork.description.like("%"+search+"%"))).all()
+            random.shuffle(artworks)
+            return render_template('explore.html', artworks=artworks,  user=user, userLoggedIn = False)
+        else:
+            return render_template('explore.html', artworks=artworks, userLoggedIn = False)
 
 @app.route('/artwork/<int:artwork_id>', methods=["GET", "POST"])
 def artworkDetails(artwork_id):
