@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Upload </title>
+    <title>Upload</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
@@ -46,6 +46,23 @@
             <label>Description</label> <br />
             <textarea id="description" name="description" rows="5" cols="40"></textarea>
           </div>
+          <!-- <div>
+          <label>price</label>
+          <br />
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            name="price"
+            placeholder="price"
+          />
+        </div> -->
+
+          <!-- <div>
+          <label>Status</label>
+          <br />
+          <input type="text" name="status" placeholder="status" />
+        </div> -->
           <button class="btn custom-button" type="submit">Submit</button>
         </form>
 

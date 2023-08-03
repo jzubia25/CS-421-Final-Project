@@ -8,7 +8,6 @@
         </title> 
         <link rel="stylesheet" href="{{ url_for('static', filename='css/registrationstyles.css') }}">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-
         <script>
             var images = {{all_art|tojson}};
             var nextImageIndex = 0;
@@ -18,7 +17,6 @@
             for (var index in images) {
                 console.log(images[index]);
             }
-
         
             doSlideshow();
         
@@ -31,20 +29,17 @@
                 }
                 currentImageIndex = nextImageIndex;
                 var nextImage = images[nextImageIndex++];
-
-
-                //$("#background").removeClass('fadeIn').addClass('fadeOu');
+                $("body").removeClass('fadeIn').addClass('fadeOut');
                 setTimeout(function() {
-                    $('#background').css('background-image', 'url("' + nextImage + '")');
-                    //$("#background").removeClass('fadeOut').addClass('fadeIn');
+                    $('body').css('background-image', 'url("' + nextImage + '")');
+                    $("body").removeClass('fadeOut').addClass('fadeIn');
                     setTimeout(doSlideshow, 5000);
                 }, 1000);
             }
-
         </script>
-
     </head>
-    <body id="background">
+    <body class= "background">
+        <main>
         <div class="register fd-container">
             <a href="{{url_for('index')}}"><img src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}" width="80" alt="Logo"></a>
             <h1>Create an Account</h1>
@@ -86,7 +81,7 @@
             {% if error %}
             <p>{{ error}}</p>
             {% endif %}
-            <p>Already have an account?<a class="createAccount" href="{{url_for('loginPage')}}">Log in</a></p>
+            <p>Already have an account? <a class="createAccount" href="{{url_for('loginPage')}}">Log in</a></p>
         </div>
             
           <div class="artwork-info">
