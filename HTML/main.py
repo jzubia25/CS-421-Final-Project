@@ -14,6 +14,9 @@ import boto3
 from werkzeug.utils import secure_filename
 import random
 from dotenv import load_dotenv
+import json
+from json import dumps
+from sqlalchemy.orm import class_mapper
 
 load_dotenv()
 
@@ -154,6 +157,12 @@ class CommentForm(FlaskForm):
     text = StringField()
     submit = SubmitField("Comment")
 
+def serialize(model):
+    columns = [c.key for c in class_mapper(model.__class__).columns]
+    return dict((c, getattr(model, c)) for c in columns)
+
+#DATABASES
+
 class User(db.Model):
     __tablename__="users"
 
@@ -251,10 +260,25 @@ def index():
         "https://images.unsplash.com/photo-1690567614925-eb1954507d87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1858&q=80",
         "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
         "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
+    
+    #all_art_objects = jsonify([art._serialize__ for art in Artwork.query.all()])
+    #[ Artwork.query.filter(Artwork.id).first().__seralize__]
+
+    all_art_objects = []
+    '''
+    serialized_art = [
+        serialize(art)
+        for art in Artwork.query.all()
+    ]
+    '''
+    #all_art_objects = dumps(serialized_art, default = str)
+
     for art in Artwork.query.all():
         all_art.append(art.url)
+        all_art_objects.append(serialize(art))
 
-    return render_template('homepage.html', all_art=all_art)
+
+    return render_template('homepage.html', all_art=all_art, all_art_objects=all_art_objects)
 
 @app.route('/loginPage', methods = ['GET', 'POST'])
 def loginPage():
@@ -272,6 +296,7 @@ def loginPage():
             return redirect(url_for('userProfile', user_id=user.id)) #User's home page
         else:
             error = "Incorrect Login Info"
+    
     all_art = ["https://images.unsplash.com/photo-1690737213782-1e957257abc9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=726&q=80",
     "https://images.unsplash.com/photo-1690509118327-5ee97f3764b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
     "https://images.unsplash.com/photo-1690652067906-f52dcffa0ab9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=80",
@@ -281,8 +306,19 @@ def loginPage():
     "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
     "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
 
+    all_art_objects = []
+    '''
+    serialized_art = [
+        serialize(art)
+        for art in Artwork.query.all()
+    ]
+    '''
+    #all_art_objects = dumps(serialized_art, default = str)
+
     for art in Artwork.query.all():
         all_art.append(art.url)
+        all_art_objects.append(serialize(art))
+
 
     return render_template ('loginPage.html', form=form, error=error if 'error' in locals() else None, all_art=all_art)
 
@@ -297,13 +333,16 @@ def register():
     "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
     "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
 
+
     for art in Artwork.query.all():
         all_art.append(art.url)
+
     return render_template("register.html", all_art=all_art)
 
 # Adds
 @app.route("/add", methods = ["POST"])
 def add():
+    
     genericPhotoLink = 'image/profile_photo.jpeg'
 
     name = request.form.get("name")
