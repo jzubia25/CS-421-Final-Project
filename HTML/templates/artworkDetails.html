@@ -27,10 +27,10 @@
                 </div>
 
                 <div class="info">
-                    <img class="user-pic"  src="{{ artist.profilePhotoLink }}" alt="profile pic">
+                    <a href="{{ url_for('userProfile', user_id=artwork.user_id) }}"><img class="user-pic"  src="{{ artist.profilePhotoLink }}" alt="profile pic"></a>
                     <div class="details">
                         <h3>{{artwork.title}}</h3>
-                        <p>by {{artist.userName}}</p>
+                        <p>by <a href="{{ url_for('userProfile', user_id=artwork.user_id) }}">{{artist.userName}}</a></p>
                         <p>{{artwork.description}}</p>
                         <p>Published {{artwork.uploadDate.strftime("%B %d, %Y")}}</p>                       
                     </div>
@@ -53,7 +53,8 @@
         <div comment-section>
         {% for comment in comments %}
             <div comment>
-            <p>{{comment.author}} says: {{comment.text}}</p>
+                <a href="{{ url_for('userProfile', user_id=comment.author_id) }}"> <img src="{{comment.profile_pic}}" alt="{{comment.author}}" width="50px"></a>
+            <p><a href="{{ url_for('userProfile', user_id=comment.author_id) }}">{{comment.author}}</a> says: {{comment.text}}</p>
             {% if user.userName == comment.author %}
                 <a href="{{ url_for('deleteComment', comment_id=comment.id, artwork_id=artwork.id)}}" class="ui blue button custom-button">Delete</a>
             {% endif %}

@@ -218,13 +218,17 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     artwork_id = db.Column(db.Integer)
     text = db.Column(db.String(140))
+    profile_pic = db.Column(db.Text)
     author = db.Column(db.String(32))
+    author_id = db.Column(db.Text)
     timestamp = db.Column(db.DateTime(), index=True)
 
-    def __init__(self, artwork_id, text, author, timestamp):
+    def __init__(self, artwork_id, text, profile_pic, author, author_id, timestamp):
         self.artwork_id = artwork_id
         self.text = text
+        self.profile_pic = profile_pic
         self.author = author
+        self.author_id = author_id
         self.timestamp = timestamp
 
     def __repr__(self):
@@ -346,27 +350,25 @@ def userProfile(user_id):
 
     # elif success and 'user_id' not in session:
     else: # 3rd person profile visit
+        currentUser = User.query.get(session['user_id'])
         user = User.query.get(user_id)
         artworks = Artwork.query.filter_by(user_id=user_id).all()
 
-        return render_template('userProfile.html', user=user, isUsersProfile=False, artworks=artworks)    
+        return render_template('userProfile.html', user=user, currentUser=currentUser, isUsersProfile=False, artworks=artworks)    
 
     # else:
     #     return redirect(url_for('error404'))
     
-# @app.route('/profilePage')
-# def profilePage():
-#     if success:
-#         return render_template ('profilePage.html')
-#     else:
-#         return redirect(url_for('error404'))
 
 @app.route('/explore', methods=["GET", "POST"])
 def explore():
     artworks = Artwork.query.all()
     random.shuffle(artworks)
 
+    randomArtwork = random.choice(Artwork.query.all())
+
     if 'user_id' in session and session['logged_in'] == True:
+        currentUser = User.query.get(session['user_id'])
         user = User.query.get(session['user_id'])
 
         if request.method == "POST":
@@ -375,18 +377,17 @@ def explore():
             artworks = Artwork.query.filter((Artwork.title.like("%"+search+"%")) | (Artwork.artist.like("%"+search+"%")) | (Artwork.description.like("%"+search+"%"))).all()
             
             random.shuffle(artworks)
-            return render_template('explore.html', artworks=artworks, user=user, userLoggedIn = True)
+            return render_template('explore.html', artworks=artworks, curerntUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
 
         else:
-            return render_template('explore.html', artworks=artworks, user=user, userLoggedIn = True)
+            return render_template('explore.html', artworks=artworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
     else:
         if request.method == "POST":
             search = request.form.get("search_term")
-            searched_artworks = Artwork.query.filter((Artwork.title.like("%"+search+"%")) | (Artwork.artist.like("%"+search+"%")) | (Artwork.description.like("%"+search+"%"))).all()
             random.shuffle(artworks)
-            return render_template('explore.html', artworks=artworks,  user=user, userLoggedIn = False)
+            return render_template('explore.html', artworks=artworks, user=user, randomArtwork=randomArtwork, userLoggedIn = False)
         else:
-            return render_template('explore.html', artworks=artworks, userLoggedIn = False)
+            return render_template('explore.html', artworks=artworks, user=user,randomArtwork=randomArtwork, userLoggedIn = False)
 
 @app.route('/artwork/<int:artwork_id>', methods=["GET", "POST"])
 def artworkDetails(artwork_id):
@@ -405,7 +406,7 @@ def artworkDetails(artwork_id):
     
     if request.method == 'POST':
         text = request.form.get("text")
-        newComment = Comment(artwork_id=artwork_id, text=text, author=user.userName, timestamp=datetime.date.today())
+        newComment = Comment(artwork_id=artwork_id, text=text, author=user.userName, profile_pic=user.profilePhotoLink, author_id=user.id, timestamp=datetime.date.today())
 
         db.session.add(newComment)
         db.session.commit()
@@ -526,12 +527,15 @@ def deleteAccount():
     user_id = session['user_id']
     user = User.query.get(user_id)
     artworks = Artwork.query.filter_by(user_id=user_id).all()
+    comments = Comment.query.filter_by(author_id=user.id).all()
 
     for artwork in artworks:
         delete_artwork_from_s3(artwork.url)
-
-    for artwork in artworks:
         db.session.delete(artwork)
+
+    for comment in comments:
+        db.session.delete(comment)
+
 
     db.session.delete(user)  
     db.session.commit()
