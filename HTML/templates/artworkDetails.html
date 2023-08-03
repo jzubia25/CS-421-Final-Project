@@ -36,15 +36,18 @@
                     </div>
                 </div>
 
-                <div>
-                    <h4>Buy a print?</h4>
-                    <p>{{artwork.price}}</p>
-                    <p>{{artwork.status}}</p>    
-                </div>
+                <!-- Buy a print Section -->
+                {% if userLoggedIn %}
+                    <div>
+                        <h4>Buy a print?</h4>
+                        <p>{{artwork.price}}</p>
+                        <p>{{artwork.status}}</p>    
+                    </div>
+                {% endif %}
         </div>              
         
         <!-- Comment Section -->
-        <form class="ui form" action="/artwork/{{artwork.id}}" method="post" enctype="multipart/form-data">
+        <!-- <form class="ui form" action="/artwork/{{artwork.id}}" method="post" enctype="multipart/form-data">
             <img src="{{user.profilePhotoLink}}" alt="{{user.userName}}" width="50px">
             <input type="text" name="text" placeholder="Add a new comment...">
             <button class="ui blue button custom-button" type="submit">Comment</button>
@@ -60,8 +63,26 @@
             {% endif %}
             </div>
         {% endfor %}
-        </div>
+        </div> -->
+        {% if userLoggedIn %}
+                <form class="ui form" action="/artwork/{{artwork.id}}" method="post" enctype="multipart/form-data">
+                    <img src="{{user.profilePhotoLink}}" alt="{{user.userName}}" width="50px">
+                    <input type="text" name="text" placeholder="Add a new comment...">
+                    <button class="ui blue button custom-button" type="submit">Comment</button>
+                </form>
 
+                <div comment-section>
+                {% for comment in comments %}
+                    <div comment>
+                        <a href="{{ url_for('userProfile', user_id=comment.author_id) }}"> <img src="{{comment.profile_pic}}" alt="{{comment.author}}" width="50px"></a>
+                    <p><a href="{{ url_for('userProfile', user_id=comment.author_id) }}">{{comment.author}}</a> says: {{comment.text}}</p>
+                    {% if user and user.userName == comment.author %}
+                        <a href="{{ url_for('deleteComment', comment_id=comment.id, artwork_id=artwork.id)}}" class="ui blue button custom-button">Delete</a>
+                    {% endif %}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
     <!-- Footer -->
     
 

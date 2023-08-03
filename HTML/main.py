@@ -429,7 +429,6 @@ def explore():
         else:
             return render_template('explore.html', artworks=artworks, randomArtwork=randomArtwork, userLoggedIn = False)
 
-
 #shop page
 @app.route('/shop')
 def shop():
@@ -440,32 +439,37 @@ def shop():
         user = User.query.get(session['user_id'])
         return render_template('shop.html', artworks=artworks, user=user, userLoggedIn = True, currentUser=currentUser)
     
-
 @app.route('/artwork/<int:artwork_id>', methods=["GET", "POST"])
 def artworkDetails(artwork_id):
     form=CommentForm()
     artwork = Artwork.query.get(artwork_id)
     print(artwork_id)
     artist = User.query.get(artwork.user_id)
-    user = User.query.get(session['user_id'])
+
+    if 'user_id' not in session:  # add this line
+        # handle the case when the user is not logged in
+         user = None  # or whatever is appropriate in your case
+         userLoggedIn = False  # add this line
+
+    else:
+        user = User.query.get(session['user_id'])
+        userLoggedIn = True   # add this line
+
     comments = Comment.query.filter_by(artwork_id = artwork.id).all()
-    print(artwork.id)
 
     if not artwork:
-        # Handle the case if the artwork with the given ID doesn't exist
-        # For example, you can return an error page or redirect to the Explore page
         return render_template('error.html', message='Artwork not found.')
     
     if request.method == 'POST':
-        text = request.form.get("text")
-        newComment = Comment(artwork_id=artwork_id, text=text, author=user.userName, profile_pic=user.profilePhotoLink, author_id=user.id, timestamp=datetime.date.today())
+        if user:  # add this line
+            text = request.form.get("text")
+            newComment = Comment(artwork_id=artwork_id, text=text, author=user.userName, profile_pic=user.profilePhotoLink, author_id=user.id, timestamp=datetime.date.today())
 
-        db.session.add(newComment)
-        db.session.commit()
-        return redirect(url_for('artworkDetails', artwork=artwork, user=user, currentUser=user, artist=artist, form=form, comments=comments, artwork_id=artwork_id))
+            db.session.add(newComment)
+            db.session.commit()
+            return redirect(url_for('artworkDetails', artwork=artwork, user=user, currentUser=user, artist=artist, form=form, comments=comments, artwork_id=artwork_id))
 
     return render_template('artworkDetails.html', artwork=artwork, user=user, currentUser=user, artist=artist, form=form, comments=comments)
-
 
 #Upload File Page 
 @app.route('/uploadPage/<int:user_id>', methods = ['GET', 'POST'])
@@ -756,8 +760,8 @@ def editAccount(user_id):
     
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True)
-    # app.run(debug=True)
+    #app.run(host='0.0.0.0',debug=True)
+    app.run(debug=True)
 
 #home page or domain is locally represented as http://127.0.0.1:5000/
 # to create multiple pages we will use decorators;

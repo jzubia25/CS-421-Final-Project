@@ -189,9 +189,9 @@ body.fadeIn {
 }
 
 body.background{
-  background-position: center center;
+  background-position: center;
   background-repeat: no-repeat;
-  background-size: contain;
+  background-size: cover;
 }
 
 @keyframes fadeOut {

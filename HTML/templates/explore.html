@@ -67,6 +67,16 @@
 
     <!-- Add your JavaScript file link here if needed -->
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script>
+        let userLoggedIn = {{ userLoggedIn|tojson }};
+        document.querySelectorAll(".artwork-thumbnail img").forEach(function(artwork){
+          artwork.addEventListener("click", function(){
+            if (!userLoggedIn) {
+              alert("Alert: Non-Users will be able to view artwork but not comment!");
+            }
+          });
+        });
+      </script>
     {% endblock %}
 </body>
 </html>
