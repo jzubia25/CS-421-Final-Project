@@ -238,7 +238,7 @@ with app.app_context():
     # Create the tables (if not already created)
     db.create_all()
 
-success = False # Login variable
+# success = False # Login variable
 
 
 @app.route('/')
@@ -265,8 +265,8 @@ def loginPage():
 
         user = User.query.filter((User.userName==userIdentity) | (User.email==userIdentity)).first()
         if user and user.password==passwordInput:
-            global success 
-            success = True
+            # global success 
+            # success = True
             session['logged_in'] = True
             session['user_id'] = user.id
             return redirect(url_for('userProfile', user_id=user.id)) #User's home page
@@ -371,11 +371,11 @@ def add():
 
 @app.route('/user/<int:user_id>')
 def userProfile(user_id): 
-    if success and 'user_id' in session and session['user_id'] == user_id: # 1st person profile visit
+    if 'user_id' in session and session['user_id'] == user_id: # 1st person profile visit
         user = User.query.get(user_id)
         artworks = Artwork.query.filter_by(user_id=user_id).all()
         
-        return render_template ('userProfile.html', user=user, isUsersProfile=True, artworks=artworks)
+        return render_template ('userProfile.html', user=user, currentUser=user, isUsersProfile=True, artworks=artworks)
 
     # elif success and 'user_id' not in session:
     else: # 3rd person profile visit
@@ -406,7 +406,7 @@ def explore():
             artworks = Artwork.query.filter((Artwork.title.like("%"+search+"%")) | (Artwork.artist.like("%"+search+"%")) | (Artwork.description.like("%"+search+"%"))).all()
             
             random.shuffle(artworks)
-            return render_template('explore.html', artworks=artworks, curerntUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
+            return render_template('explore.html', artworks=artworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
 
         else:
             return render_template('explore.html', artworks=artworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
@@ -414,9 +414,9 @@ def explore():
         if request.method == "POST":
             search = request.form.get("search_term")
             random.shuffle(artworks)
-            return render_template('explore.html', artworks=artworks, user=user, randomArtwork=randomArtwork, userLoggedIn = False)
+            return render_template('explore.html', artworks=artworks, randomArtwork=randomArtwork, userLoggedIn = False)
         else:
-            return render_template('explore.html', artworks=artworks, user=user,randomArtwork=randomArtwork, userLoggedIn = False)
+            return render_template('explore.html', artworks=artworks, randomArtwork=randomArtwork, userLoggedIn = False)
 
 @app.route('/artwork/<int:artwork_id>', methods=["GET", "POST"])
 def artworkDetails(artwork_id):
@@ -439,16 +439,16 @@ def artworkDetails(artwork_id):
 
         db.session.add(newComment)
         db.session.commit()
-        return redirect(url_for('artworkDetails', artwork=artwork, user=user, artist=artist, form=form, comments=comments, artwork_id=artwork_id))
+        return redirect(url_for('artworkDetails', artwork=artwork, user=user, currentUser=user, artist=artist, form=form, comments=comments, artwork_id=artwork_id))
 
-    return render_template('artworkDetails.html', artwork=artwork, user=user, artist=artist, form=form, comments=comments)
+    return render_template('artworkDetails.html', artwork=artwork, user=user, currentUser=user, artist=artist, form=form, comments=comments)
 
 
 #Upload File Page 
 @app.route('/uploadPage/<int:user_id>', methods = ['GET', 'POST'])
 def uploadPage(user_id):
     user = User.query.get(user_id)
-    return render_template('upload.html', user=user, user_id=user_id)
+    return render_template('upload.html', user=user, user_id=user_id, currentUser=user)
 
 @app.route("/addArt/<int:user_id>", methods = ["POST"])
 def addArt(user_id):
@@ -504,14 +504,14 @@ def sellingPage(user_id):
         elif form.saveDraft.data:
             # Save the form data as 'draft'
             return 'Artwork saved as draft'
-    return render_template('selling.html', user=user, form=form)
+    return render_template('selling.html', user=user, currentUser=user, form=form)
 
 #Upload File Page 
 @app.route('/deletePage/<int:user_id>', methods = ['GET', 'POST'])
 def deletePage(user_id):
     user = User.query.get(user_id)
     artworks = Artwork.query.filter_by(user_id=user_id).all()
-    return render_template('deleteArt.html', user=user, user_id=user_id, artworks=artworks)
+    return render_template('deleteArt.html', user=user, user_id=user_id, artworks=artworks, currentUser=user)
 
 @app.route("/deleteArt/<int:user_id>", methods = ["GET","POST"])
 def deleteArt(user_id):
@@ -534,7 +534,7 @@ def deleteArt(user_id):
                 db.session.delete(artwork)
                 
                 db.session.commit()
-        return redirect(url_for('userProfile', user_id=user_id))
+        return redirect(url_for('userProfile', user_id=user_id, currentUser=user))
     else:
         return (redirect(url_for('explore')))
     # Need query to find and delete art from database
@@ -585,7 +585,7 @@ def deleteComment(comment_id, artwork_id):
     comments = Comment.query.filter(artwork_id==artwork.id).all()
 
     db.session.commit()
-    return redirect(url_for('artworkDetails', artwork=artwork, user=user, artist=artist, form=form, comments=comments, artwork_id=artwork_id))
+    return redirect(url_for('artworkDetails', artwork=artwork, user=user, currentUser=user, artist=artist, form=form, comments=comments, artwork_id=artwork_id))
 
 #Routes for user galleries
 @app.route('/<option>/<int:user_id>')
@@ -602,8 +602,8 @@ def gallery(option, user_id):
 
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0',debug=True)
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)
+    # app.run(debug=True)
 
 #home page or domain is locally represented as http://127.0.0.1:5000/
 # to create multiple pages we will use decorators;
