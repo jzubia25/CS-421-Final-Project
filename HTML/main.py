@@ -9,7 +9,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import DataRequired, Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import LargeBinary, or_, and_
+from sqlalchemy import LargeBinary, or_, and_, and_
 import boto3
 from werkzeug.utils import secure_filename
 import random
@@ -131,7 +131,7 @@ class RegistrationForm(FlaskForm):
     password = StringField(validators = [DataRequired()])
     confirmPassword = StringField(validators = [DataRequired()])
     userName = StringField(validators = [DataRequired()]) 
-    #profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png']), FileSize(max_size=2 * 1024 * 1024, message='No photos larger than 2MB.'),DataRequired()])
+    ##profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'jpeg', 'png']), FileSize(max_size=2 * 1024 * 1024, message='No photos larger than 2MB.'),DataRequired()])
     bio = TextAreaField()
     pronouns = SelectField('Choose your pronouns', choices=[('option1', 'she/her'),('option2', 'he/him'), ('option3', 'they/them'), ('option4', 'she/they'), ('option5', 'he/they'), ('option6', 'any pronouns')])
     title = SelectField('Choose a title', choices=[('title1', 'Professional'), ('title2', 'Student'), ('title3', 'Hobbyist')])
@@ -422,16 +422,6 @@ def explore():
         else:
             return render_template('explore.html', artworks=artworks, randomArtwork=randomArtwork, userLoggedIn = False)
 
-
-@app.route('/shop')
-def shop():
-    artworks = Artwork.query.filter_by(shop_item=True).all()
-    random.shuffle(artworks)
-    if 'user_id' in session and session['logged_in'] == True:
-        user = User.query.get(session['user_id'])
-        return render_template('shop.html', artworks=artworks, user=user, userLoggedIn = True)
-
-    
 @app.route('/artwork/<int:artwork_id>', methods=["GET", "POST"])
 def artworkDetails(artwork_id):
     form=CommentForm()
@@ -468,7 +458,7 @@ def uploadPage(user_id):
 @app.route('/sellingPage/<int:user_id>', methods = ['GET', 'POST'])
 def sellingPage(user_id):
     user = User.query.get(user_id)
-    return render_template('selling.html', user=user, user_id=user_id)
+    return render_template('selling.html', user=user, user_id=user_id, currentUser=user)
 
 
 @app.route("/addArt/<int:user_id>", methods = ["POST"])
