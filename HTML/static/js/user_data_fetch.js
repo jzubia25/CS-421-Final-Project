@@ -22,14 +22,16 @@ function loadContent(option) {
 function createThumbnail(item, container) {
   const card = document.createElement('div');
   card.classList.add('artwork-thumbnail')
+
   //change to details page
+  let artworkDetailsPage = `/artwork/${item.id}`;
   const link = document.createElement('a');
-  link.href = item.url;
+  link.href = artworkDetailsPage;
   card.appendChild(link)
 
   const img = document.createElement('img');
   img.src = item.url;
-  card.appendChild(img)
+  link.appendChild(img)
 
   const title = document.createElement('div');
   title.classList.add('art-title');

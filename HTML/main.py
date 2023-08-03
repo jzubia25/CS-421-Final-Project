@@ -24,7 +24,6 @@ ACCESS_KEY = os.getenv("ACCESS_KEY")
 SECRET_KEY = os.getenv("SECRET_KEY")
 AWS_REGION = os.getenv("AWS_REGION")
 
-
 #artvisionbucket
 
 basedir = os.path.abspath(os.path.dirname(__file__)) 
@@ -430,6 +429,18 @@ def explore():
         else:
             return render_template('explore.html', artworks=artworks, randomArtwork=randomArtwork, userLoggedIn = False)
 
+
+#shop page
+@app.route('/shop')
+def shop():
+    artworks = Artwork.query.filter_by(shop_item=True).all()
+    random.shuffle(artworks)
+    if 'user_id' in session and session['logged_in'] == True:
+        currentUser = User.query.get(session['user_id'])
+        user = User.query.get(session['user_id'])
+        return render_template('shop.html', artworks=artworks, user=user, userLoggedIn = True, currentUser=currentUser)
+    
+
 @app.route('/artwork/<int:artwork_id>', methods=["GET", "POST"])
 def artworkDetails(artwork_id):
     form=CommentForm()
@@ -462,6 +473,12 @@ def uploadPage(user_id):
     user = User.query.get(user_id)
     return render_template('upload.html', user=user, user_id=user_id, currentUser=user)
 
+#Upload Comission Page 
+@app.route('/sellingPage/<int:user_id>', methods = ['GET', 'POST'])
+def sellingPage(user_id):
+    user = User.query.get(user_id)
+    return render_template('selling.html', user=user, user_id=user_id, currentUser=user)
+
 @app.route("/addArt/<int:user_id>", methods = ["POST"])
 def addArt(user_id):
     user = User.query.get(user_id)
@@ -472,6 +489,7 @@ def addArt(user_id):
     category = request.form.get("category")
     price = request.form.get("price")
     status = request.form.get("status")
+    shop_item = "price" in request.form
 
     f = request.files["file"]
     filename = f.filename.split("\\")[-1]
@@ -498,25 +516,25 @@ def addArt(user_id):
     url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
 
     os.remove(filename)
-    newArt = Artwork(title =title, description=description, category=category, price=price, status=status, url=url, user_id=user_id, artist=artist, uploadDate=datetime.date.today())
+    newArt = Artwork(title =title, description=description, category=category, price=price, status=status, url=url, user_id=user_id, artist=artist, uploadDate=datetime.date.today(), shop_item=shop_item)
     db.session.add(newArt)
     db.session.commit()
     return redirect(url_for('userProfile', user_id=user_id))
 
-#Selling Page
-@app.route('/sellingPage/<int:user_id>', methods=['GET', 'POST'])
-def sellingPage(user_id):
-    user = User.query.get(user_id)
+# #Selling Page
+# @app.route('/sellingPage/<int:user_id>', methods=['GET', 'POST'])
+# def sellingPage(user_id):
+#     user = User.query.get(user_id)
     
-    form = SellingForm()
-    if form.validate_on_submit():
-        if form.submit.data:
-            # Save the form data as 'Published'
-            return 'Artwork saved'
-        elif form.saveDraft.data:
-            # Save the form data as 'draft'
-            return 'Artwork saved as draft'
-    return render_template('selling.html', user=user, currentUser=user, form=form)
+#     form = SellingForm()
+#     if form.validate_on_submit():
+#         if form.submit.data:
+#             # Save the form data as 'Published'
+#             return 'Artwork saved'
+#         elif form.saveDraft.data:
+#             # Save the form data as 'draft'
+#             return 'Artwork saved as draft'
+#     return render_template('selling.html', user=user, currentUser=user, form=form)
 
 #Upload File Page 
 @app.route('/deletePage/<int:user_id>', methods = ['GET', 'POST'])
@@ -603,11 +621,13 @@ def deleteComment(comment_id, artwork_id):
 def gallery(option, user_id):
     user = User.query.get(user_id)
     if option == 'gallery':
-        artworks = Artwork.query.filter_by(user_id=user_id).all()
+        artworks = Artwork.query.filter_by(user_id=user_id, shop_item=False).all()
         serialized_artworks = {artwork.id: {"id": artwork.id, "title": artwork.title, "price": artwork.price, "url": artwork.url} for artwork in artworks}
         return jsonify(serialized_artworks)
-    # elif option == 'favorites':
-    #     #get favorites
+    elif option == 'shop':
+        artworks = Artwork.query.filter_by(user_id=user_id, shop_item=True).all()
+        serialized_artworks = {artwork.id: {"id": artwork.id, "title": artwork.title, "price": artwork.price, "url": artwork.url} for artwork in artworks}
+        return jsonify(serialized_artworks)
     # elif option == 'shop':
     #     #get selling items
 
