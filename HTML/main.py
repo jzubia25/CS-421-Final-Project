@@ -206,9 +206,10 @@ class Artwork(db.Model):
     artist = db.Column(db.String(32))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
     uploadDate = db.Column(db.DateTime)
+    shop_item = db.Column(db.Boolean, default=False)
 
 
-    def __init__(self, title, description, category, price, status, url, artist, user_id, uploadDate):
+    def __init__(self, title, description, category, price, status, url, artist, user_id, uploadDate, shop_item):
         self.title = title
         self.description = description
         self.category = category
@@ -218,6 +219,7 @@ class Artwork(db.Model):
         self.artist = artist
         self.user_id = user_id
         self.uploadDate = uploadDate
+        self.shop_item = shop_item
 
     def __repr__(self):
         return f"<Artwork {self.title}>"
