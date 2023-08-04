@@ -45,7 +45,7 @@ function createThumbnail(option, item, container) {
   title.appendChild(titleLink);
 
   const price = document.createElement('p');
-  price.textContent = `$${item.price.toFixed(2)}`;
+  price.textContent = `$${item.price}`;
   console.log(option)
   if (option == 'shop') {
     title.appendChild(price);

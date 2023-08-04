@@ -554,7 +554,7 @@ def addArt(user_id):
     title = request.form.get("title")
     description = request.form.get("description")
     category = request.form.get("category")
-    price = "{:.2f}".format(request.form.get("price"))
+    price = request.form.get("price")
     status = request.form.get("status")
     shop_item = "price" in request.form
 
