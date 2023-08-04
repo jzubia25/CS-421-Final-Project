@@ -16,17 +16,17 @@
 
 
     <!-- SIDEBAR GOES HERE-->
-    <h2><a href="{{url_for('explore')}}">Explore</a></h2>
+    <h2><a href="{{url_for('explore', sort='random')}}">Explore</a></h2>
 
     <!--search bar-->
-    <form class="ui form" action="/explore" method="post" enctype="multipart/form-data">
+    <form class="ui form" action="{{url_for('explore', sort='random')}}" method="post" enctype="multipart/form-data">
         <input type="text" name="search_term" placeholder="Search art...">
         <button class="ui blue button custom-button" type="submit" style="display: none"></button>
     </form>
 
     <h4>Popular</h4>
 
-    <h4>Newest</h4>
+    <h4><a href="{{url_for('explore', sort='newest')}}">Newest</a></h4>
 
     <a href="{{ url_for('artworkDetails', artwork_id=randomArtwork.id) }}"><h4>Random Artwork</h4></a>
 
@@ -44,19 +44,40 @@
         <div class="artwork-gallery">
             <h2>ArtVision Gallery</h2>
             <div class="artwork-grid">
+              
+              {% if sort == 'newest' %}
+              
+                {% for artwork in newestArtworks %}
+                  <!-- Display the sitewide artworks here -->
+                  <!-- Grab random/popular artwork from within a certain time period -->
+                  <!-- Example of a single artwork thumbnail -->
+                  <div class="artwork-thumbnail">
+                      <a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">
+                          <img src="{{ artwork.url }}" alt="{{ artwork.title }}"> 
+                    </a>
+                  </div>
+                  <div class="artwork-details">
+                      <p><a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">{{artwork.title}}</a> by <a href="{{ url_for('userProfile', user_id=artwork.user_id) }}">{{artwork.artist}}</a></p>
+                      </div>
+                {% endfor %} 
+ 
+              {% else %}
                 {% for artwork in artworks %}
-                <!-- Display the sitewide artworks here -->
-                <!-- Grab random/popular artwork from within a certain time period -->
-                <!-- Example of a single artwork thumbnail -->
-                <div class="artwork-thumbnail">
-                    <a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">
-                        <img src="{{ artwork.url }}" alt="{{ artwork.title }}"> 
-                   </a>
-                </div>
-                <div class="artwork-details">
-                    <p><a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">{{artwork.title}}</a> by <a href="{{ url_for('userProfile', user_id=artwork.user_id) }}">{{artwork.artist}}</a></p>
-                    </div>
-                {% endfor %}    
+                  <!-- Display the sitewide artworks here -->
+                  <!-- Grab random/popular artwork from within a certain time period -->
+                  <!-- Example of a single artwork thumbnail -->
+                  <div class="artwork-thumbnail">
+                      <a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">
+                          <img src="{{ artwork.url }}" alt="{{ artwork.title }}"> 
+                    </a>
+                  </div>
+                  <div class="artwork-details">
+                      <p><a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">{{artwork.title}}</a> by <a href="{{ url_for('userProfile', user_id=artwork.user_id) }}">{{artwork.artist}}</a></p>
+                      </div>
+                {% endfor %}
+
+              {% endif %}
+  
             </div>
         </div>
 

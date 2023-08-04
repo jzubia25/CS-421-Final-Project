@@ -10,7 +10,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import DataRequired, Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import LargeBinary, func
+from sqlalchemy import LargeBinary, func, desc
 import boto3
 from werkzeug.utils import secure_filename
 import random
@@ -427,12 +427,15 @@ def userProfile(user_id):
     #     return redirect(url_for('error404'))
     
 
-@app.route('/explore', methods=["GET", "POST"])
-def explore():
+@app.route('/explore/<sort>', methods=["GET", "POST"])
+def explore(sort):
     artworks = Artwork.query.all()
     random.shuffle(artworks)
 
     randomArtwork = random.choice(Artwork.query.all())
+
+    newestArtworks = Artwork.query.order_by(desc(Artwork.uploadDate)).all()
+
 
     if 'user_id' in session and session['logged_in'] == True:
         currentUser = User.query.get(session['user_id'])
@@ -444,17 +447,17 @@ def explore():
             artworks = Artwork.query.filter((Artwork.title.like("%"+search+"%")) | (Artwork.artist.like("%"+search+"%")) | (Artwork.description.like("%"+search+"%"))).all()
             
             random.shuffle(artworks)
-            return render_template('explore.html', artworks=artworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
+            return render_template('explore.html', sort=sort, artworks=artworks, newestArtworks=newestArtworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
 
         else:
-            return render_template('explore.html', artworks=artworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
+            return render_template('explore.html', sort=sort, artworks=artworks, newestArtworks=newestArtworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
     else:
         if request.method == "POST":
             search = request.form.get("search_term")
             random.shuffle(artworks)
-            return render_template('explore.html', artworks=artworks, randomArtwork=randomArtwork, userLoggedIn = False)
+            return render_template('explore.html', sort=sort, artworks=artworks, newestArtworks=newestArtworks, randomArtwork=randomArtwork, userLoggedIn = False)
         else:
-            return render_template('explore.html', artworks=artworks, randomArtwork=randomArtwork, userLoggedIn = False)
+            return render_template('explore.html', sort=sort, artworks=artworks, newestArtworks=newestArtworks, randomArtwork=randomArtwork, userLoggedIn = False)
 
 #shop page
 @app.route('/shop')
@@ -549,7 +552,7 @@ def addArt(user_id):
     url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
 
     os.remove(filename)
-    newArt = Artwork(title =title, description=description, category=category, price=price, status=status, url=url, user_id=user_id, artist=artist, uploadDate=datetime.date.today(), shop_item=shop_item)
+    newArt = Artwork(title =title, description=description, category=category, price=price, status=status, url=url, user_id=user_id, artist=artist, uploadDate=datetime.datetime.now(), shop_item=shop_item)
     db.session.add(newArt)
     db.session.commit()
     return redirect(url_for('userProfile', user_id=user_id))
@@ -634,7 +637,7 @@ def deleteAccount():
     session['logged_in'] = False
     session.pop('user_id', None)
 
-    return redirect(url_for('explore'))
+    return redirect(url_for('explore', sort='random'))
 
 
 @app.route('/deleteComment/<int:comment_id>/<int:artwork_id>')
