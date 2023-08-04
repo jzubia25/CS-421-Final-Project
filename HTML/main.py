@@ -554,7 +554,7 @@ def addArt(user_id):
     title = request.form.get("title")
     description = request.form.get("description")
     category = request.form.get("category")
-    price = request.form.get("price")
+    price = "{:.2f}".format(request.form.get("price"))
     status = request.form.get("status")
     shop_item = "price" in request.form
 
@@ -617,11 +617,10 @@ def updateCart():
     return jsonify(success=True)
 
 def calculateCartTotal(cart):
-    total = 0.0
+    total = 0.00
     for attr in cart.values():
         total += attr['quantity'] * attr['price']
     return total
-
 
 
 #delete item from cart

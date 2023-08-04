@@ -5,7 +5,7 @@ document.querySelectorAll('.decrease').forEach(function (button) {
         let artwork_id = this.getAttribute('value');
         let newQuantity = quantity - 1;
         // prevent negative value
-        if (newQuantity >= 0) {
+        if (newQuantity > 0) {
             updateCart(newQuantity, artwork_id);
         }
     });

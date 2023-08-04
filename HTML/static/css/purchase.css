@@ -1,17 +1,17 @@
-.card{
+.card {
     display: flex;
     gap: 10px;
     margin: 10px;
 }
 
-.total{
+.total {
     display: flex;
     justify-content: space-between;
     gap: 10px;
 
 }
 
-main{
+main {
     display: flex;
     justify-content: space-around;
 }

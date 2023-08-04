@@ -3,6 +3,9 @@ document
     .querySelector(".fileInput")
     .addEventListener("change", function (e) {
         let imagePreview = document.querySelector(".image-preview");
+        while (imagePreview.firstChild) {
+            imagePreview.removeChild(imagePreview.firstChild);
+        }
         let newImg = document.createElement("img");
         newImg.setAttribute("style", "max-width: 100%; max-height: 100%;");
         let file = e.target.files[0];

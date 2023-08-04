@@ -15,13 +15,13 @@ function loadContent(option) {
       }
       //Create items
       for (let key in data) {
-        createThumbnail(data[key], artworkContainer);
+        createThumbnail(option, data[key], artworkContainer);
         console.log(data[key]);
       }
     });
 }
 
-function createThumbnail(item, container) {
+function createThumbnail(option, item, container) {
   const card = document.createElement('div');
   card.classList.add('artwork-thumbnail')
 
@@ -43,6 +43,13 @@ function createThumbnail(item, container) {
   titleLink.textContent = item.title
   titleLink.href = artworkDetailsPage;
   title.appendChild(titleLink);
+
+  const price = document.createElement('p');
+  price.textContent = `$${item.price.toFixed(2)}`;
+  console.log(option)
+  if (option == 'shop') {
+    title.appendChild(price);
+  }
 
   container.appendChild(card);
 }

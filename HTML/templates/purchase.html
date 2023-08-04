@@ -30,7 +30,7 @@
               </a>
                 <div class="card-details">
                   <p>{{art.title}}</p>
-                  <p>{{art.price}}</p>
+                  <p>$ {{"%.2f"|format(art.price)}}</p>
                   <div class="quantity" id="{{art.quantity}}"><button class="decrease" value="{{art.id}}">-</button>{{ art.quantity }}<button class="increase" value="{{art.id}}">+</button></div>
                   <a href="{{ url_for('deleteCartItem', artwork_id=item ) }}">Delete</a> <br>
                 </div>
@@ -41,7 +41,7 @@
               {% endif %}
             <div class="total">
               <div>TOTAL</div>
-              <div>$ {{total}} </div>
+              <div>$ {{"%.2f"|format(total)}} </div>
             </div>
           </div>
       <form method="POST" enctype="multipart/form-data" action="{{ url_for('thankyou', user_id=user_id) }}" >
