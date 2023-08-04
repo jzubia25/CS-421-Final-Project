@@ -1,36 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="{{ url_for('static', filename='deleteArt.css') }}" />
-        <title>Delete</title>
-    </head>
-    <body>
-            <header>
-      {% extends "base.html" %}
-    </header>
-  {% block content %}
-        <h1>Hi {{ user.name }}, select art work to be deleted.</h1>
-        <form action="/deleteArt/{{user.id}}" method="POST" enctype="multipart/form-data">
-        <div class="field">
-            <label for="Select artwork to delete:"></label>
-            <!-- Display the user's artworks here -->
-            <!-- You can use a loop to generate the artwork thumbnails -->
-            <!-- Example of a single artwork thumbnail -->
-            <ul>
-            {% for artwork in artworks %}
-                <li>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Artworks | ArtVision</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" />
+</head>
+<body class="user-profile">
+    {% extends "base.html" %}
+    {% block content %}
+    <div class="profile">
+            <!--Profile personal details-->
+            <div class="profile-details">
+                <h1 class="user-name">{{ user.userName }} </h1>
+                <div class="user-intro">
+                    <div class="user-img-container">
+                        <img src="{{ user.profilePhotoLink }}" alt="profile pic">
+                    </div>
+                    <div>
+                        <p>{{ user.name }}</p>
+                        <p>{{ user.pronouns}}</p>
+                        <p>{{ user.title}}</p>
+                    </div>
+                </div>
+                <p>About Me</p>
+                <div class="bio">
+                    <p>{{ user.bio }}</p>
+                </div>
+                <p>Member Since: {{ (user.registrationDate).strftime("%B %d, %Y")}}</p>
+
+                <!--options if is users profile-->
+                {% if isUsersProfile %}
+                <div>
+                    <p>{{ user.email }}</p>
+                    <a href="{{ url_for('logout') }}">Sign Out</a> <br>
+                    <a href="{{ url_for('deleteAccount') }}">Delete Account</a> <br>
+                    <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
+                    <!-- <a href="{{ url_for('userProfile', user_id=user.id )}}">Upload New Art</a> -->
+                    <a href="{{ url_for('sellingPage', user_id=user.id ) }}">Sell Your Art</a> <br>
+                    <a href="{{ url_for('editPage', user_id=user.id ) }}">Edit Account</a> 
+                    {% if message %}
+                    <p>{{ message }}</p>
+                    {% endif %}                   
+                </div>
+                {% endif %}
+            </div>
+
+        <!-- Artwork Gallery Section -->
+        <div class="artwork-gallery">
+            <form action="/deleteArt/{{user.id}}" method="POST" enctype="multipart/form-data">
+            <div class="artwork-grid">
+                <!--Artworks will populate here when explore is visited-->
+                {% for artwork in artworks %}
+                <!-- Display the user's artworks here -->
+                <!-- You can use a loop to generate the artwork thumbnails -->
+                <!-- Example of a single artwork thumbnail -->
+                <div class="artwork-thumbnail">
                     <input type="checkbox" name="artworkToDelete" value="{{artwork.id}}">
-                    {{ artwork.title}} <a href="{{ artwork.url }}">
-                    <img src="{{ artwork.url }}" alt="{{ artwork.title }}">
-                </a>
-                </li>
-            {% endfor %}
-            </ul>
+                    <a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">
+                        <img src="{{ artwork.url }}" alt="{{ artwork.title }}">
+                    </a>
+                    <div class="art-title"><p>{{ artwork.title}}</p></div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="ui blue button custom-button" type="submit">Delete Selected Artwork</button>
+            </form>
         </div>
-        <button class="ui blue button custom-button" type="submit">Delete</button>
-    </form>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <!-- Your footer content here -->
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/user_data_fetch.js') }}"></script>
     {% endblock %}
-    </body>
+</body>
 </html>
