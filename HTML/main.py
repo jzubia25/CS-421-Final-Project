@@ -498,8 +498,7 @@ def artworkDetails(artwork_id):
         userLoggedIn = True   # add this line
 
     comments = Comment.query.filter_by(artwork_id = artwork.id).all()
-    commentsCount = db.session.execute(Comment.query.filter_by(artwork_id = artwork.id).statement.with_only_columns([func.count()]).order_by(None)).scalar()
-
+    commentsCount = db.session.execute(Comment.query.filter_by(artwork_id=artwork.id).statement.with_only_columns(func.count()).order_by(None)).scalar()
 
     if not artwork:
         return render_template('error.html', message='Artwork not found.')
