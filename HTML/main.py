@@ -424,7 +424,7 @@ def userProfile(user_id):
         
         return render_template ('userProfile.html', user=user, currentUser=user, isUsersProfile=True, artworks=artworks)
 
-    elif session['logged_in'] == True and 'user_id' not in session:
+    elif session['logged_in'] == True and 'user_id' in session and session['user_id'] != user_id:
         # 3rd person profile visit
         currentUser = User.query.get(session['user_id'])
         user = User.query.get(user_id)
@@ -432,7 +432,7 @@ def userProfile(user_id):
 
         return render_template('userProfile.html', user=user, currentUser=currentUser, isUsersProfile=False, artworks=artworks)    
 
-    elif session['logged_in'] == False:
+    else:
         currentUser=None
         user = User.query.get(user_id)
         artworks = Artwork.query.filter_by(user_id=user_id).all()
@@ -902,8 +902,8 @@ def editAccount(user_id):
     
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0',debug=True)
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)
+    # app.run(debug=True)
 
 #home page or domain is locally represented as http://127.0.0.1:5000/
 # to create multiple pages we will use decorators;
@@ -917,5 +917,10 @@ https://www.w3schools.com/tags/att_input_type_file.asp#:~:text=The%20%3Cinput%20
 Flask HTML loops
 https://www.geeksforgeeks.org/python-using-for-loop-in-flask/#
 https://stackoverflow.com/questions/45167508/flask-template-for-loop-iteration-keyvalue
-
+Hiding API keys
+https://www.youtube.com/watch?v=YdgIWTYQ69A
+s3 Bucket
+UAB Cloud Computing CS 403 SU2023
+Delete from s3 Bucket
+https://stackoverflow.com/questions/3140779/how-to-delete-files-from-amazon-s3-bucket
 """
