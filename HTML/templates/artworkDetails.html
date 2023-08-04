@@ -64,25 +64,36 @@
             </div>
         {% endfor %}
         </div> -->
-        {% if userLoggedIn %}
+        
+                <b>Comments</b> {{commentsCount}}
+
                 <form class="ui form" action="/artwork/{{artwork.id}}" method="post" enctype="multipart/form-data">
                     <img src="{{user.profilePhotoLink}}" alt="{{user.userName}}" width="50px">
+                    {% if userLoggedIn %}
                     <input type="text" name="text" placeholder="Add a new comment...">
-                    <button class="ui blue button custom-button" type="submit">Comment</button>
+                    <button class="btn btn-primary" role="button" type="submit">Comment</button>
+
+                    {% endif %}
+
+                    {% if userLoggedIn == False %}
+                    <input type="text" name="text" placeholder="Log in to comment...">
+                    <a href="{{url_for('loginPage')}}" class="btn btn-primary" role="button">Comment</a>
+                    {% endif %}
+
                 </form>
 
+                <br>
                 <div comment-section>
                 {% for comment in comments %}
                     <div comment>
-                        <a href="{{ url_for('userProfile', user_id=comment.author_id) }}"> <img src="{{comment.profile_pic}}" alt="{{comment.author}}" width="50px"></a>
-                    <p><a href="{{ url_for('userProfile', user_id=comment.author_id) }}">{{comment.author}}</a> says: {{comment.text}}</p>
+                        <p> <a href="{{ url_for('userProfile', user_id=comment.author_id) }}"> <img src="{{comment.profile_pic}}" alt="{{comment.author}}" width="50px"></a>
+                    <a href="{{ url_for('userProfile', user_id=comment.author_id) }}">{{comment.author}}</a> says: {{comment.text}}
                     {% if user and user.userName == comment.author %}
-                        <a href="{{ url_for('deleteComment', comment_id=comment.id, artwork_id=artwork.id)}}" class="ui blue button custom-button">Delete</a>
+                        <a href="{{ url_for('deleteComment', comment_id=comment.id, artwork_id=artwork.id)}}" class="btn btn-primary" role="button">Delete</a></p>
                     {% endif %}
                     </div>
                 {% endfor %}
                 </div>
-            {% endif %}
     <!-- Footer -->
     
 

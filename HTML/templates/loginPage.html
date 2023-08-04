@@ -7,36 +7,65 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
         <script>
           var images = {{all_art|tojson}};
-          var nextImageIndex = 0;
-          var currentImageIndex = -1;
-      
-          console.log(images.length);
-          for (var index in images) {
-              console.log(images[index]);
-          }
-      
-          doSlideshow();
-      
-          function doSlideshow() {
-              if (nextImageIndex >= images.length) {
-                  nextImageIndex = 0;
-              }
-              while (nextImageIndex == currentImageIndex) {
-                  nextImageIndex = Math.floor(Math.random() * images.length);
-              }
-              currentImageIndex = nextImageIndex;
-              var nextImage = images[nextImageIndex++];
-              $("body").removeClass('fadeIn').addClass('fadeOut');
-              setTimeout(function() {
-                  $('body').css('background-image', 'url("' + nextImage + '")');
-                  $("body").removeClass('fadeOut').addClass('fadeIn');
-                  setTimeout(doSlideshow, 5000);
-              }, 1000);
-          }
+            var nextImageIndex = 0;
+            var currentImageIndex = -1;
+        
+            console.log(images.length);
+            for (var index in images) {
+                console.log(images[index]);
+            }
+        
+            var all_art = {{all_art_objects|tojson}}
+            var length = all_art.length
+            for (var index=0; index<length; index++){
+                console.log(all_art[index])
+            }
+
+            doSlideshow();
+        
+            function doSlideshow() {
+                if (nextImageIndex >= images.length) {
+                    nextImageIndex = 0;
+                }
+                while (nextImageIndex == currentImageIndex) {
+                    nextImageIndex = Math.floor(Math.random() * images.length);
+                }
+                currentImageIndex = nextImageIndex;
+                var nextImage = images[nextImageIndex++];
+                
+                for (var index=0; index<length; index++){
+                    if ((all_art[index]['url']) == nextImage) {
+                        if (all_art[index]['title'] != null) {
+                            document.getElementById("artwork_title").innerHTML=all_art[index]['title']
+                        }
+
+                        if (all_art[index]['artist'] != null) {
+                            document.getElementById("artwork_artist").innerHTML=all_art[index]['artist']
+                        }
+                        //changePfp(document.getElementById("artwork_pfp"),"new_url")
+                        //https://stackoverflow.com/questions/7312553/change-image-source-with-javascript
+                    }
+                }   
+                
+                //$("#background").removeClass('fadeIn').addClass('fadeOut');
+                setTimeout(function() {
+                    $('#background').css('background-image', 'url("' + nextImage + '")');
+                    //$("#background").removeClass('fadeOut').addClass('fadeIn');
+                    setTimeout(doSlideshow, 5000);
+                }, 1000);
+            }
+
+            function changePfp(domImage, srcImage) {
+                var img = new Image();
+                img.onload = function()
+                {
+                    domImg.src = this.src;
+                };
+                img.src = srcImage;
+            }
       </script>
     </head>
-    <body class= "background">
-        <main>
+    <body id= "background" style="background-image: url({{all_art[0]}});" onload="doSlideshow()">
             <div class="fd-container">
               <a href="{{url_for('index')}}"><img src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}" width="80" alt="Logo"></a>
                 <h1>Login to Your Account</h1>
@@ -54,13 +83,12 @@
                 {% endif %}
                 <p>Not a member yet? <a class="createAccount" href="{{url_for('register')}}">Create an Account</a></p>
               </div>
-          <div class="artwork-info">
-            <img class="user" src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}">
-            <div class="artist-details">
-            <p>Artwork title</p>
-            <p>by Artist</p>
-          </div>
-          </div>
-        </main>
+              <div class="artwork-info">
+                <img class="user" src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}" id="artwork_pfp">
+                <div class="artist-details">
+                <p id="artwork_title">Artwork title</p>
+                <p>by <span id="artwork_artist">Artist</span></p>
+              </div>
+              </div>
       </body>
 </html>

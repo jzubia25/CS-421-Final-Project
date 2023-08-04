@@ -36,14 +36,13 @@
                 <!--options if is users profile-->
                 {% if isUsersProfile %}
                 <div>
-                    <p>{{ user.email }}</p>
-                    <a href="{{ url_for('logout') }}">Sign Out</a> <br>
+                    <a href="{{ url_for('logout') }}" class="btn btn-primary">Sign Out</a> <br>
                     <a href="{{ url_for('deleteAccount') }}">Delete Account</a> <br>
                     <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
                     <!-- <a href="{{ url_for('userProfile', user_id=user.id )}}">Upload New Art</a> -->
                     <a href="{{ url_for('sellingPage', user_id=user.id ) }}">Sell Your Art</a> <br>
                     <a href="{{ url_for('deletePage', user_id=user.id ) }}">Delete Art</a> <br>
-                    <a href="{{ url_for('editPage', user_id=user.id ) }}">Edit Account</a> 
+                    <a href="{{ url_for('editPage', user_id=user.id ) }}" class="btn btn-primary">Edit Account</a> 
                     {% if message %}
                     <p>{{ message }}</p>
                     {% endif %}                   

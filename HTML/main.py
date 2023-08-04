@@ -1,6 +1,7 @@
 import os
 import re
 import datetime
+import random
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify
 from flask_wtf import FlaskForm
 from wtforms import (StringField, SubmitField, BooleanField, DateTimeField,
@@ -9,12 +10,15 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import DataRequired, Length
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import LargeBinary, or_, and_
+from sqlalchemy import LargeBinary, func
 import boto3
 from werkzeug.utils import secure_filename
 import random
 from dotenv import load_dotenv
 import requests # need to pip install requests
+import json
+from json import dumps
+from sqlalchemy.orm import class_mapper
 
 load_dotenv()
 
@@ -163,6 +167,11 @@ class CommentForm(FlaskForm):
     text = StringField()
     submit = SubmitField("Comment")
 
+
+def serialize(model):
+    columns = [c.key for c in class_mapper(model.__class__).columns]
+    return dict((c, getattr(model, c)) for c in columns) 
+
 class User(db.Model):
     __tablename__="users"
 
@@ -222,7 +231,7 @@ class Artwork(db.Model):
 
     def __repr__(self):
         return f"<Artwork {self.title}>"
-    
+
 
 class Comment(db.Model):
     __tablename__="comments"
@@ -262,10 +271,17 @@ def index():
         "https://images.unsplash.com/photo-1690567614925-eb1954507d87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1858&q=80",
         "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
         "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
+    
+    all_art_objects = []
+
+
     for art in Artwork.query.all():
         all_art.append(art.url)
+        all_art_objects.append(serialize(art))
 
-    return render_template('homepage.html', all_art=all_art)
+    random.shuffle(all_art)
+
+    return render_template('homepage.html', all_art=all_art, all_art_objects=all_art_objects)
 
 @app.route('/loginPage', methods = ['GET', 'POST'])
 def loginPage():
@@ -292,10 +308,15 @@ def loginPage():
     "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
     "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
 
+    all_art_objects = []
+
     for art in Artwork.query.all():
         all_art.append(art.url)
+        all_art_objects.append(serialize(art))
 
-    return render_template ('loginPage.html', form=form, error=error if 'error' in locals() else None, all_art=all_art)
+    random.shuffle(all_art)
+
+    return render_template ('loginPage.html', form=form, error=error if 'error' in locals() else None, all_art=all_art, all_art_objects=all_art_objects)
 
 @app.route("/register")
 def register():
@@ -308,9 +329,15 @@ def register():
     "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
     "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
 
+    all_art_objects = []
+
     for art in Artwork.query.all():
         all_art.append(art.url)
-    return render_template("register.html", all_art=all_art)
+        all_art_objects.append(serialize(art))
+
+    random.shuffle(all_art)
+
+    return render_template("register.html", all_art=all_art, all_art_objects=all_art_objects)
 
 # Adds
 @app.route("/add", methods = ["POST"])
@@ -456,6 +483,8 @@ def artworkDetails(artwork_id):
         userLoggedIn = True   # add this line
 
     comments = Comment.query.filter_by(artwork_id = artwork.id).all()
+    commentsCount = db.session.execute(Comment.query.filter_by(artwork_id = artwork.id).statement.with_only_columns([func.count()]).order_by(None)).scalar()
+
 
     if not artwork:
         return render_template('error.html', message='Artwork not found.')
@@ -467,9 +496,9 @@ def artworkDetails(artwork_id):
 
             db.session.add(newComment)
             db.session.commit()
-            return redirect(url_for('artworkDetails', artwork=artwork, user=user, currentUser=user, artist=artist, form=form, comments=comments, artwork_id=artwork_id))
+            return redirect(url_for('artworkDetails', artwork=artwork, user=user, currentUser=user, artist=artist, form=form, comments=comments, commentsCount=commentsCount, artwork_id=artwork_id, userLoggedIn=userLoggedIn))
 
-    return render_template('artworkDetails.html', artwork=artwork, user=user, currentUser=user, artist=artist, form=form, comments=comments)
+    return render_template('artworkDetails.html', artwork=artwork, user=user, currentUser=user, artist=artist, form=form, comments=comments, commentsCount=commentsCount, userLoggedIn=userLoggedIn)
 
 #Upload File Page 
 @app.route('/uploadPage/<int:user_id>', methods = ['GET', 'POST'])
