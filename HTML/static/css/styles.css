@@ -87,7 +87,8 @@ footer {
 /* Styling for Forms */
 .upload-page,
 .selling-page,
-.details-page {
+.details-page,
+.purchase-page {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -95,7 +96,8 @@ footer {
 }
 
 .upload-page h1,
-.selling-page h1 {
+.selling-page h1,
+.purchase-page h1 {
     font-size: 24px;
     color: #4C4A8F;
 
@@ -103,7 +105,8 @@ footer {
 
 .upload-page main,
 .selling-page main,
-.details-page main {
+.details-page main,
+.purchase-page main {
     flex: 1;
     display: flex;
     justify-content: center;
@@ -111,7 +114,8 @@ footer {
 }
 
 .upload-page .wrapper,
-.selling-page .wrapper {
+.selling-page .wrapper,
+.purchase-page .wrapper {
     display: flex;
     flex-direction: column;
     background-color: rgba(204, 203, 239, 0.37);
@@ -124,7 +128,8 @@ footer {
 .upload-page form input,
 .upload-page form textarea,
 .selling-page form input,
-.selling-page form textarea {
+.selling-page form textarea,
+.purchase-page form input {
     width: 90%;
     background-color: #fff;
     border: none;
@@ -137,7 +142,8 @@ form textarea {
 }
 
 .upload-page form div,
-.selling-page form div {
+.selling-page form div,
+.purchase-page form div {
     margin: 18px 0px;
 }
 
@@ -162,7 +168,8 @@ button.custom-button:hover {
 }
 
 .upload-page .form-container,
-.selling-page .form-container {
+.selling-page .form-container,
+.purchase-page .form-container {
     display: flex;
     justify-content: space-between;
     padding: 20px;
@@ -189,6 +196,20 @@ input[type="file"]::file-selector-button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/* purchase form */
+.checkout-summary .card {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+    gap: 14px;
+}
+
+.checkout-summary .total {
+    display: flex;
+    justify-content: space-around;
 }
 
 /* Details page styles */

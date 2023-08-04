@@ -24,9 +24,12 @@ load_dotenv()
 
 # ###
 # GRAB ACCESS_KEY and SECRET_KEY FROM DISCORD. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
-ACCESS_KEY = os.getenv("ACCESS_KEY")
-SECRET_KEY = os.getenv("SECRET_KEY")
-AWS_REGION = os.getenv("AWS_REGION")
+# ACCESS_KEY = os.getenv("ACCESS_KEY")
+# SECRET_KEY = os.getenv("SECRET_KEY")
+# AWS_REGION = os.getenv("AWS_REGION")
+ACCESS_KEY ="AKIA6IBZYP2JKTBDBS2X"
+SECRET_KEY ="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"
+AWS_REGION = "us-east-2"
 
 #artvisionbucket
 
@@ -286,7 +289,7 @@ def index():
 @app.route('/loginPage', methods = ['GET', 'POST'])
 def loginPage():
     form = LoginForm()
-    if form.validate_on_submit():
+    if form.is_submitted() and form.validate():
         userIdentity = form.userIdentity.data
         passwordInput = form.password.data
 
@@ -296,6 +299,7 @@ def loginPage():
             # success = True
             session['logged_in'] = True
             session['user_id'] = user.id
+            session['cart'] = {}
             return redirect(url_for('userProfile', user_id=user.id)) #User's home page
         else:
             error = "Incorrect Login Info"
@@ -515,6 +519,13 @@ def sellingPage(user_id):
     user = User.query.get(user_id)
     return render_template('selling.html', user=user, user_id=user_id, currentUser=user)
 
+#Checkout Page
+@app.route('/purchasePage/<int:user_id>', methods = ['GET', 'POST'])
+def purchasePage(user_id):
+    user = User.query.get(user_id)
+    return render_template('purchase.html', user=user, user_id=user_id, currentUser=user, cart=session['cart'])
+
+#add to cart
 @app.route("/addArt/<int:user_id>", methods = ["POST"])
 def addArt(user_id):
     user = User.query.get(user_id)
@@ -557,20 +568,35 @@ def addArt(user_id):
     db.session.commit()
     return redirect(url_for('userProfile', user_id=user_id))
 
-# #Selling Page
-# @app.route('/sellingPage/<int:user_id>', methods=['GET', 'POST'])
-# def sellingPage(user_id):
-#     user = User.query.get(user_id)
-    
-#     form = SellingForm()
-#     if form.validate_on_submit():
-#         if form.submit.data:
-#             # Save the form data as 'Published'
-#             return 'Artwork saved'
-#         elif form.saveDraft.data:
-#             # Save the form data as 'draft'
-#             return 'Artwork saved as draft'
-#     return render_template('selling.html', user=user, currentUser=user, form=form)
+
+#add artwork to cart
+@app.route("/addCart/<int:artwork_id>", methods = ["POST"])
+def addCart(artwork_id):
+    artwork = Artwork.query.get(artwork_id) 
+    quantity = int(request.form.get('quantity'))
+    if not artwork:
+        return render_template('error.html', message='Artwork not found.')
+    cart = session['cart']
+
+    if str(artwork.id) not in cart:
+        cart[str(artwork.id)] = {'quantity': 0,'price': artwork.price,'image_url': artwork.url,'title' : artwork.title,'id' : artwork.id}
+
+    cart[str(artwork.id)]['quantity'] += quantity
+    session['cart'] = cart
+    return redirect(url_for('artworkDetails', artwork_id=artwork_id))
+
+
+#delete item from cart
+@app.route('/deleteCartItem/<int:artwork_id>')
+def deleteCartItem(artwork_id):
+    cart = session.get('cart', {})
+    if str(artwork_id) in cart:
+        del cart[str(artwork_id)]
+        session['cart'] = cart
+    return redirect(url_for('purchasePage', user_id=session['user_id']))
+
+
+
 
 #Upload File Page 
 @app.route('/deletePage/<int:user_id>', methods = ['GET', 'POST'])
