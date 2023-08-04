@@ -36,14 +36,19 @@
                     </div>
                 </div>
 
-                <!-- Buy a print Section -->
-                {% if userLoggedIn %}
-                    <div>
-                        <h4>Buy a print?</h4>
-                        <p>{{artwork.price}}</p>
-                        <p>{{artwork.status}}</p>    
-                    </div>
-                {% endif %}
+                <div>
+                    <h4>Buy a print?</h4>
+                    <p>{{artwork.price}}</p>
+                    <p>{{artwork.status}}</p> 
+                    {% if artwork.shop_item %}
+                    <form action="{{ url_for('addCart', artwork_id=artwork.id) }}" method="POST"
+                    enctype="multipart/form-data">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" name="quantity" value="1" min="1">
+                        <button type="submit">Add to cart</button>
+                    </form>   
+                    {% endif %}
+                </div>
         </div>              
         
         <!-- Comment Section -->
