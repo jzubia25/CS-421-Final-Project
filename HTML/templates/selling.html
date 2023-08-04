@@ -47,14 +47,9 @@
         <div>
           <label>Price</label>
           <br />
-          <input
-            type="number"
-            step="0.01"
-            min="0.01"
-            name="price"
-            placeholder="$"
+          <input class="price-input" type="number" step="0.01" min="0.01" name="price" placeholder="$"
           />
-          <p>Estimated earnings: $$</p>
+          <p class="estimate">Estimated earnings:</p>
         </div>
         <button class="btn custom-button" type="submit">Submit</button>
       </form>
@@ -66,6 +61,17 @@
       </div>
       <div>
     </main>
+    <script>
+      const estimatedEarnings = document.querySelector('.estimate');
+      document.querySelector('.price-input').addEventListener('input', function(){
+        let inputPrice = parseFloat(this.value)
+        let total;
+        if (inputPrice >= 0){
+          total = inputPrice * 0.8;
+          estimatedEarnings.textContent = `Estimated earnings: ${total.toFixed(2)}`
+        }
+      });
+    </script>
     <script src="{{ url_for('static', filename='js/file_upload_preview.js') }}"></script>
     {% endblock %}
   </body>

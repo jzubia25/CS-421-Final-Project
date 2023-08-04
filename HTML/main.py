@@ -24,12 +24,10 @@ load_dotenv()
 
 # ###
 # GRAB ACCESS_KEY and SECRET_KEY FROM DISCORD. DO NOT COMMIT TO GITHUB WITH ACCESS KEYS IN CODE
-# ACCESS_KEY = os.getenv("ACCESS_KEY")
-# SECRET_KEY = os.getenv("SECRET_KEY")
-# AWS_REGION = os.getenv("AWS_REGION")
-ACCESS_KEY ="AKIA6IBZYP2JKTBDBS2X"
-SECRET_KEY ="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"
-AWS_REGION = "us-east-2"
+ACCESS_KEY = os.getenv("ACCESS_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+AWS_REGION = os.getenv("AWS_REGION")
+
 
 #artvisionbucket
 
@@ -444,15 +442,12 @@ def userProfile(user_id):
     #     return redirect(url_for('error404'))
     
 
-@app.route('/explore/<sort>', methods=["GET", "POST"])
-def explore(sort):
+@app.route('/explore', methods=["GET", "POST"])
+def explore():
     artworks = Artwork.query.all()
     random.shuffle(artworks)
 
     randomArtwork = random.choice(Artwork.query.all())
-
-    newestArtworks = Artwork.query.order_by(desc(Artwork.uploadDate)).all()
-
 
     if 'user_id' in session and session['logged_in'] == True:
         currentUser = User.query.get(session['user_id'])
@@ -464,17 +459,17 @@ def explore(sort):
             artworks = Artwork.query.filter((Artwork.title.like("%"+search+"%")) | (Artwork.artist.like("%"+search+"%")) | (Artwork.description.like("%"+search+"%"))).all()
             
             random.shuffle(artworks)
-            return render_template('explore.html', sort=sort, artworks=artworks, newestArtworks=newestArtworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
+            return render_template('explore.html', artworks=artworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
 
         else:
-            return render_template('explore.html', sort=sort, artworks=artworks, newestArtworks=newestArtworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
+            return render_template('explore.html', artworks=artworks, currentUser=currentUser, randomArtwork=randomArtwork, user=user, userLoggedIn = True)
     else:
         if request.method == "POST":
             search = request.form.get("search_term")
             random.shuffle(artworks)
-            return render_template('explore.html', sort=sort, artworks=artworks, newestArtworks=newestArtworks, randomArtwork=randomArtwork, userLoggedIn = False)
+            return render_template('explore.html', artworks=artworks, randomArtwork=randomArtwork, userLoggedIn = False)
         else:
-            return render_template('explore.html', sort=sort, artworks=artworks, newestArtworks=newestArtworks, randomArtwork=randomArtwork, userLoggedIn = False)
+            return render_template('explore.html', artworks=artworks, randomArtwork=randomArtwork, userLoggedIn = False)
 
 #shop page
 @app.route('/shop')
@@ -536,9 +531,21 @@ def sellingPage(user_id):
 @app.route('/purchasePage/<int:user_id>', methods = ['GET', 'POST'])
 def purchasePage(user_id):
     user = User.query.get(user_id)
-    return render_template('purchase.html', user=user, user_id=user_id, currentUser=user, cart=session['cart'])
+    total = calculateCartTotal(session['cart'])
+    return render_template('purchase.html', user=user, user_id=user_id, currentUser=user, cart=session['cart'], total=total)
 
-#add to cart
+@app.route ('/thankyou', methods = ["POST"])
+def thankyou():
+    user_id = session['user_id']
+    if 'cart' in session and session['cart']:
+        user = User.query.get(user_id)
+        session['cart'] = {} #empty cart
+        message = "Thank you for your order"
+        return render_template('thankyou.html', message=message, currentUser=user, user=user)
+  
+    return redirect(url_for('purchasePage', user_id=user_id))
+
+
 @app.route("/addArt/<int:user_id>", methods = ["POST"])
 def addArt(user_id):
     user = User.query.get(user_id)
@@ -576,7 +583,7 @@ def addArt(user_id):
     url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
 
     os.remove(filename)
-    newArt = Artwork(title =title, description=description, category=category, price=price, status=status, url=url, user_id=user_id, artist=artist, uploadDate=datetime.datetime.now(), shop_item=shop_item)
+    newArt = Artwork(title =title, description=description, category=category, price=price, status=status, url=url, user_id=user_id, artist=artist, uploadDate=datetime.date.today(), shop_item=shop_item)
     db.session.add(newArt)
     db.session.commit()
     return redirect(url_for('userProfile', user_id=user_id))
@@ -597,6 +604,24 @@ def addCart(artwork_id):
     cart[str(artwork.id)]['quantity'] += quantity
     session['cart'] = cart
     return redirect(url_for('artworkDetails', artwork_id=artwork_id))
+
+#update cart quantity
+@app.route('/updateCart', methods=['POST'])
+def updateCart():
+    data = request.get_json()
+    artwork_id = data.get('artwork_id')
+    quantity = int(data.get('quantity', 0))
+    cart = session['cart']
+    cart[artwork_id]['quantity'] = quantity
+    session['cart'] = cart
+    return jsonify(success=True)
+
+def calculateCartTotal(cart):
+    total = 0.0
+    for attr in cart.values():
+        total += attr['quantity'] * attr['price']
+    return total
+
 
 
 #delete item from cart
@@ -676,7 +701,7 @@ def deleteAccount():
     session['logged_in'] = False
     session.pop('user_id', None)
 
-    return redirect(url_for('explore', sort='random'))
+    return redirect(url_for('explore'))
 
 
 @app.route('/deleteComment/<int:comment_id>/<int:artwork_id>')
