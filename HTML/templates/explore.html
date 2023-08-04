@@ -30,14 +30,24 @@
 
     <a href="{{ url_for('artworkDetails', artwork_id=randomArtwork.id) }}"><h4>Random Artwork</h4></a>
 
-    <h2>Categories</h2>
+    <!-- <h2>Categories</h2>
     <p>Traditional Art</p>
     <p>Digital Art</p>
     <p>Mixed Media</p>
     <p>Graphic Design</p>
     <p>Photography</p>
     <p>Comics</p>
-    <p>Fan Art</p>
+    <p>Fan Art</p> -->
+
+    <nav class="explore-nav">
+      <a href="#" onclick="loadExploreContent('Traditional Art')">traditional</a> <br>
+      <a href="#"  onclick="loadExploreContent('Digital Art')">digital</a> <br>
+      <a href="#" onclick="loadExploreContent('Mixed Media')">mixed</a> <br>
+      <a href="#" onclick="loadExploreContent('Graphic Design')">graphic</a> <br>
+      <a href="#"  onclick="loadExploreContent('Photography')">photography</a> <br>
+      <a href="#" onclick="loadExploreContent('Comics')" >comics</a> <br>
+      <a href="#" onclick="loadExploreContent('Fan Art')" >fan-art</a> <br>
+  </nav>
 
 
         <!-- Artwork Gallery Section -->
@@ -55,10 +65,11 @@
                       <a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">
                           <img src="{{ artwork.url }}" alt="{{ artwork.title }}"> 
                     </a>
-                  </div>
-                  <div class="artwork-details">
+                    <div class="artwork-details">
                       <p><a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">{{artwork.title}}</a> by <a href="{{ url_for('userProfile', user_id=artwork.user_id) }}">{{artwork.artist}}</a></p>
                       </div>
+                  </div>
+                  
                 {% endfor %} 
  
               {% else %}
@@ -70,10 +81,10 @@
                       <a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">
                           <img src="{{ artwork.url }}" alt="{{ artwork.title }}"> 
                     </a>
-                  </div>
-                  <div class="artwork-details">
+                    <div class="artwork-details">
                       <p><a href="{{ url_for('artworkDetails', artwork_id=artwork.id) }}">{{artwork.title}}</a> by <a href="{{ url_for('userProfile', user_id=artwork.user_id) }}">{{artwork.artist}}</a></p>
                       </div>
+                  </div>
                 {% endfor %}
 
               {% endif %}
@@ -98,6 +109,7 @@
           });
         });
       </script>
+      <script src="{{ url_for('static', filename='js/user_data_fetch.js') }}"></script>
     {% endblock %}
 </body>
 </html>

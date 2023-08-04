@@ -284,7 +284,7 @@ def index():
 @app.route('/loginPage', methods = ['GET', 'POST'])
 def loginPage():
     form = LoginForm()
-    if form.is_submitted() and form.validate():
+    if form.validate_on_submit():
         userIdentity = form.userIdentity.data
         passwordInput = form.password.data
 
@@ -722,14 +722,20 @@ def gallery(option, user_id):
     user = User.query.get(user_id)
     if option == 'gallery':
         artworks = Artwork.query.filter_by(user_id=user_id, shop_item=False).all()
-        serialized_artworks = {artwork.id: {"id": artwork.id, "title": artwork.title, "price": artwork.price, "url": artwork.url} for artwork in artworks}
-        return jsonify(serialized_artworks)
     elif option == 'shop':
         artworks = Artwork.query.filter_by(user_id=user_id, shop_item=True).all()
-        serialized_artworks = {artwork.id: {"id": artwork.id, "title": artwork.title, "price": artwork.price, "url": artwork.url} for artwork in artworks}
-        return jsonify(serialized_artworks)
-    # elif option == 'shop':
-    #     #get selling items
+    serialized_artworks = {artwork.id: {"id": artwork.id, "title": artwork.title, "price": artwork.price, "url": artwork.url} for artwork in artworks}
+    return jsonify(serialized_artworks)
+
+
+#Routes for explore
+@app.route('/category/<category>')
+def exploreCategories(category):
+    artworks = Artwork.query.filter_by(category=category).all()
+    serialized_artworks = {artwork.id: {"id": artwork.id, "title": artwork.title, "price": artwork.price, "url": artwork.url, "user_id" : artwork.user_id, "artist" : artwork.artist} for artwork in artworks}
+    return jsonify(serialized_artworks)
+
+
 
 @app.route('/editPage/<int:user_id>', methods = ['GET', 'POST'])
 def editPage(user_id):
