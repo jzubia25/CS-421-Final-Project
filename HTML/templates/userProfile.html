@@ -27,7 +27,7 @@
                         <p>{{ user.title}}</p>
                     </div>
                 </div>
-                <p>About Me</p>
+                <p><b>About Me</b></p>
                 <div class="bio">
                     <p>{{ user.bio }}</p>
                 </div>
@@ -36,13 +36,11 @@
                 <!--options if is users profile-->
                 {% if isUsersProfile %}
                 <div>
-                    <a href="{{ url_for('logout') }}" class="btn btn-primary">Sign Out</a> <br>
-                    <a href="{{ url_for('deleteAccount') }}">Delete Account</a> <br>
-                    <a href="{{ url_for('uploadPage', user_id=user.id ) }}">Upload New Art</a>
-                    <!-- <a href="{{ url_for('userProfile', user_id=user.id )}}">Upload New Art</a> -->
-                    <a href="{{ url_for('sellingPage', user_id=user.id ) }}">Sell Your Art</a> <br>
-                    <a href="{{ url_for('deletePage', user_id=user.id ) }}">Delete Art</a> <br>
-                    <a href="{{ url_for('editPage', user_id=user.id ) }}" class="btn btn-primary">Edit Account</a> 
+                    <p><a href="{{ url_for('logout') }}" class="btn btn-primary">Log Out</a></p>
+                    <!--<p><a href="{{ url_for('uploadPage', user_id=user.id ) }}" class="btn btn-primary">Submit Art</a></p>-->
+                    <!--<p><a href="{{ url_for('sellingPage', user_id=user.id ) }}" class="btn btn-primary">Sell Your Art</a></p>-->
+                    <p><a href="{{ url_for('deletePage', user_id=user.id ) }}" class="btn btn-primary">Manage Gallery</a></p>
+                    <p><a href="{{ url_for('editPage', user_id=user.id ) }}" class="btn btn-primary">Edit Account</a></p> 
                     {% if message %}
                     <p>{{ message }}</p>
                     {% endif %}                   

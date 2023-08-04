@@ -4,37 +4,87 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="{{ url_for('static', filename='deleteArt.css') }}" />
-        <title>Delete</title>
+        <title>Edit Account</title>
     </head>
     <body>
             <header>
       {% extends "base.html" %}
     </header>
   {% block content %}
-        <h1>Hi {{ user.name }}, update your user information.</h1>
+        <h1>Settings</h1>
         <form class="ui form" action="/editAccount/{{user.id}}" method="POST" enctype="multipart/form-data">
-        <div class="field">
-            <div>
-                <p>Verify current User info</p>
-                <input type="text" name="currentemail" placeholder="Current Email"> <br>
-                <input type="password" name="currentpassword" placeholder="Current Password"> <br>
-                <input type="text" name="currentusername" placeholder="Current Username"> <br>
-            </div>
-            <br>
-            <p>Enter updated User info</p>
-            <input type="text" name="newusername" placeholder="New Username"> <br>
-            <input type="text" name="confirmnewusername" placeholder="Confirm New Username"> <br>
-            <input type="text" name="newemail" placeholder="New Email"> <br>
-            <input type="text" name="confirmnewemail" placeholder="Confirm New Email"> <br>
-            <input type="password" name="newpassword" placeholder="New Password"> <br>
-            <input type="password" name="confirmnewpassword" placeholder="Confirm New Password"> <br>
- 
+        <div class="update-user-profile">
+            <h3>Update User Profile</h3>
+
+            <label for="newUsername">Change username</label>
+            <input type="text" name="newUsername" placeholder="{{user.userName}}"> <br>
+
+            <label for="newDisplayName">Display name</label>
+            <input type="text" name="newDisplayName" placeholder="{{user.name}}"> <br>
+            
+            <p><label for="newPronouns">Pronouns:</label>
+                <select id="pronouns" name="newPronouns">
+                    <option value="" selected="selected" hidden="hidden">Choose your pronouns</option>
+                    <option value="she/her">she/her</option>
+                    <option value="he/him">he/him</option>
+                    <option value="they/them">they/them</option>
+                    <option value="she/they">she/they</option>
+                    <option value="he/they">he/they</option>
+                    <option value="any">any pronouns</option>
+                </select></p>
+            
+            <p><label for="newTitle">Title</label>
+                <select id="title" name="newTitle">
+                    <option value="" selected="selected" hidden="hidden">Choose your title</option>
+                    <option value="Professional">Professional</option>
+                    <option value="Student">Student</option>
+                    <option value="Hobbyist">Hobbyist</option>
+                </select>
+            </p>
+
+            <label for="newBio">About me</label>
+            <textarea name="newBio" placeholder="{{user.bio}}"></textarea> <br>
+
+            <input type="submit" class="btn btn-primary" name="profile-change" value="Update">
         </div>
-        <button class="ui blue button custom-button" type="submit">Update</button>
+
+        <br>
+
+            <div class="account-settings">
+                <h3>Account Settings</h3>
+                <h5>Change Account Information</h5>
+
+                <h6>Email</h6>
+                <label for="newemail">Change email address</label>
+                <input type="email" name="newemail" placeholder="New email address"> <br>
+                <label for="confirmnewemail">Confirm new email address</label>
+                <input type="email" name="confirmnewemail" placeholder="Confirm new email address"> <br>
+                
+                <h6>Password</h6>
+                <p><label for="newpassword">New password</label>
+                <input type="password" name="newpassword" placeholder="New password"></p>
+                
+                <p><label for="newpassword">Confirm new password</label>
+                <input type="password" name="confirmnewpassword" placeholder="Confirm new password"></p>
+                
+                <p><b>Verify current email and password to continue.</b></p>
+                <label for="currentemail">Current email</label>
+                <input type="email" name="currentemail" placeholder="Current email"> <br>
+                <label for="currentpassword">Current password</label>
+                <input type="password" name="currentpassword" placeholder="Current password"> <br>
+                
+                {% for error in errors %}
+                <p style="color: rgb(190, 5, 5); font-weight: bold;">{{error}}</p>
+                {% endfor %}
+                <input type="submit" class="btn btn-primary" name="account-change" value="Update">
+            </div>
+
+        <br>
+            <div class="manage-account">
+                <h5>Manage Your Account</h5>
+                <a href="{{ url_for('deleteAccount') }}" class="btn btn-danger">Delete Account</a> <br>
+            </div>
     </form>
-    {% if error %}
-    <p>{{ error}}</p>
-    {% endif %}
     {% endblock %}
     </body>
 </html>

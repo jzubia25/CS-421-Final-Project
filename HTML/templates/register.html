@@ -11,6 +11,7 @@
         <script>
             var all_art = {{ all_art|tojson }}
             var all_art_objects = {{ all_art_objects|tojson }}
+            var all_user_objects = {{all_user_objects|tojson}}
         </script>
     </head>
     
@@ -20,11 +21,11 @@
             <h1>Create an Account</h1>
             
             <form class="ui form" action="/add" method="post" enctype="multipart/form-data">
-                    <input type="text" name="name" placeholder="Name"> <br>
-                    <input type="text" name="email" placeholder="Email"> <br>
+                    <input type="email" name="email" placeholder="Email"> <br>
                     <input type="text" name="username" placeholder="Username"> <br>
                     <input type="password" name="password" placeholder="Password"> <br>
                     <input type="password" name="confirmpassword" placeholder="Confirm password"> <br>
+                    <input type="text" name="name" placeholder="Name"> <br>
                     <!--Move bio and profile photo to user profile page-->
                     <input type="text" name="bio" placeholder="Bio"> <br>
 

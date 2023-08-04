@@ -266,25 +266,22 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    all_art = ["https://images.unsplash.com/photo-1690737213782-1e957257abc9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=726&q=80",
-        "https://images.unsplash.com/photo-1690509118327-5ee97f3764b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
-        "https://images.unsplash.com/photo-1690652067906-f52dcffa0ab9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=80",
-        "https://images.unsplash.com/photo-1690565595343-ad4186d2f262?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-        "https://images.unsplash.com/photo-1690615497820-dbedbfb47dd1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-        "https://images.unsplash.com/photo-1690567614925-eb1954507d87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1858&q=80",
-        "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-        "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
+    
+    all_art = []
     
     all_art_objects = []
-
+    all_user_objects =[]
 
     for art in Artwork.query.all():
         all_art.append(art.url)
         all_art_objects.append(serialize(art))
 
+    for user in User.query.all():
+        all_user_objects.append(serialize(user))
+
     random.shuffle(all_art)
 
-    return render_template('homepage.html', all_art=all_art, all_art_objects=all_art_objects)
+    return render_template('homepage.html', all_art=all_art, all_art_objects=all_art_objects, all_user_objects=all_user_objects)
 
 @app.route('/loginPage', methods = ['GET', 'POST'])
 def loginPage():
@@ -303,16 +300,11 @@ def loginPage():
             return redirect(url_for('userProfile', user_id=user.id)) #User's home page
         else:
             error = "Incorrect Login Info"
-    all_art = ["https://images.unsplash.com/photo-1690737213782-1e957257abc9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=726&q=80",
-    "https://images.unsplash.com/photo-1690509118327-5ee97f3764b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
-    "https://images.unsplash.com/photo-1690652067906-f52dcffa0ab9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=80",
-    "https://images.unsplash.com/photo-1690565595343-ad4186d2f262?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-    "https://images.unsplash.com/photo-1690615497820-dbedbfb47dd1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-    "https://images.unsplash.com/photo-1690567614925-eb1954507d87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1858&q=80",
-    "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-    "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
+    
+    all_art = []
 
     all_art_objects = []
+    all_user_objects = []
 
     for art in Artwork.query.all():
         all_art.append(art.url)
@@ -320,32 +312,47 @@ def loginPage():
 
     random.shuffle(all_art)
 
-    return render_template ('loginPage.html', form=form, error=error if 'error' in locals() else None, all_art=all_art, all_art_objects=all_art_objects)
+    for user in User.query.all():
+        all_user_objects.append(serialize(user))
+
+    return render_template ('loginPage.html', form=form, error=error if 'error' in locals() else None, all_art=all_art, all_art_objects=all_art_objects, all_user_objects=all_user_objects)
 
 @app.route("/register")
 def register():
-    all_art = ["https://images.unsplash.com/photo-1690737213782-1e957257abc9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=726&q=80",
-    "https://images.unsplash.com/photo-1690509118327-5ee97f3764b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80",
-    "https://images.unsplash.com/photo-1690652067906-f52dcffa0ab9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2532&q=80",
-    "https://images.unsplash.com/photo-1690565595343-ad4186d2f262?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-    "https://images.unsplash.com/photo-1690615497820-dbedbfb47dd1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-    "https://images.unsplash.com/photo-1690567614925-eb1954507d87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1858&q=80",
-    "https://images.unsplash.com/photo-1690397684550-96f2381f1c65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-    "https://images.unsplash.com/photo-1690520847807-0fe664e51973?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=762&q=80"]
+    all_art = []
 
     all_art_objects = []
+    all_user_objects = []
 
     for art in Artwork.query.all():
         all_art.append(art.url)
         all_art_objects.append(serialize(art))
 
+    for user in User.query.all():
+        all_user_objects.append(serialize(user))
+
     random.shuffle(all_art)
 
-    return render_template("register.html", all_art=all_art, all_art_objects=all_art_objects)
+    return render_template("register.html", all_art=all_art, all_art_objects=all_art_objects, all_user_objects=all_user_objects)
 
 # Adds
 @app.route("/add", methods = ["POST"])
 def add():
+    all_art = []
+
+    all_art_objects = []
+    all_user_objects = []
+    
+
+    for art in Artwork.query.all():
+        all_art.append(art.url)
+        all_art_objects.append(serialize(art))
+
+    for user in User.query.all():
+        all_user_objects.append(serialize(user))
+
+    random.shuffle(all_art)
+
     genericPhotoLink = 'image/profile_photo.jpeg'
 
     name = request.form.get("name")
@@ -363,20 +370,20 @@ def add():
     emailCheck = User.query.filter_by(email=email).first()
     if emailCheck: # If email already exists in database
         error = "The email you entered is already taken."
-        return render_template ('register.html', error=error)
+        return render_template ('register.html', error=error, all_art=all_art, all_art_objects=all_art_objects, all_user_objects=all_user_objects)
     
     userNameCheck = User.query.filter_by(userName=username).first()
     if userNameCheck: # If email already exists in database
         error = "The username you entered is already taken."
-        return render_template ('register.html', error=error)
+        return render_template ('register.html', error=error, all_art=all_art, all_art_objects=all_art_objects, all_user_objects=all_user_objects)
 
     if not passwordValidation(password):
         error = "Password must contain at least one capital letter, one lowercase letter, and end with a number."
-        return render_template('register.html', error=error)
+        return render_template('register.html', error=error, all_art=all_art, all_art_objects=all_art_objects, all_user_objects=all_user_objects)
     
     if password != confirmpassword:
         error = "Passwords do not match."
-        return render_template('register.html', error=error)
+        return render_template('register.html', error=error, all_art=all_art, all_art_objects=all_art_objects, all_user_objects=all_user_objects)
     
     # if ' ' in filename:
     #     error = "photo name cannot contain a space."
@@ -710,111 +717,152 @@ def editAccount(user_id):
     user = User.query.get(user_id)
     artworks = Artwork.query.filter_by(user_id=user_id).all()
     update = False
+
+    if request.method == "POST":
+        ##UPDATE USER PROFILE INFORMATION
+        if request.form.get('profile-change') == "Update":
+            newUsername = request.form.get("newUsername")
+            newDisplayName = request.form.get("newDisplayName")
+            newPronouns = request.form.get("newPronouns")
+            newTitle = request.form.get("newTitle")
+            newBio = request.form.get("newBio")
+
+            if newDisplayName:
+                user.name = newDisplayName
+                update = True
+
+            if newPronouns:
+                user.pronouns = newPronouns
+                update = True
+
+            if newTitle:
+                user.title = newTitle
+                update = True
+
+            if newBio:
+                user.bio = newBio
+                update = True
+
+            userNameCheck = User.query.filter_by(userName=newUsername).first()
+            # print(userNameCheck)
+            currentUsername = user.userName
+            if newUsername and userNameCheck is None:
+                user.userName = newUsername
+
+                # setting up client
+                # client = boto3.client(
+                #     's3',
+                #     aws_access_key_id = ACCESS_KEY,
+                #     aws_secret_access_key = SECRET_KEY ,
+                #     region_name=AWS_REGION
+                #     )
+
+                # transferring profile photo to new userName
+
+                # Saving profile photo
+                response = requests.get(user.profilePhotoLink)
+                url_parts = user.profilePhotoLink.split("/")
+                filename = url_parts[-1]
+
+                with open(filename, 'wb') as f:
+                    f.write(response.content)
+
+                # uploading profile photo
+                client.upload_file(filename,"artvisionbucket", "profilephoto/" + user.userName + "/" + filename)
+                
+                bucket_name = "artvisionbucket"
+                s3_key = "profilephoto/" + user.userName + "/" + filename
+                url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
+                user.profilePhotoLink = url
+                client.delete_object(Bucket="artvisionbucket", Key="profilephoto/" + currentUsername +"/"+ filename)
+                os.remove(filename)
+
+                for artwork in artworks:
+                    url = artwork.url
+                    url_parts = url.split("/")
+
+                    url_parts[4] = newUsername
+                    newUrl = "/".join(url_parts)
+                    artwork.url = newUrl
+
+                    response = requests.get(url)
+                    filename = url_parts[-1]
+
+                    with open(filename, 'wb') as f:
+                        f.write(response.content)
+
+                    client.upload_file(filename,"artvisionbucket", "artgallery/" + user.userName + "/" + filename)
+                    bucket_name = "artvisionbucket"
+                    s3_key = "artgallery/" + user.userName + "/" + filename
+                    url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
+                    client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + currentUsername +"/"+ filename)
+                    os.remove(filename)
+                    update = True
+            db.session.commit()
+
+        ##UPDATE ACCOUNT INFORMATION
+        if request.form.get('account-change') == "Update":
+            ##Verification
+            user = User.query.filter_by(id=user_id).first()
+            passwordInDatabase = user.password
+            emailInDatabase = user.email
+
+            currentEmail = request.form.get("currentemail")
+            currentPassword = request.form.get("currentpassword")
+
+            ##Proposed changes
+            newEmail = request.form.get("newemail")
+            confirmNewEmail = request.form.get("confirmnewemail")
+
+            newPassword = request.form.get("newpassword")
+            confirmNewPassword = request.form.get("confirmnewpassword")
     
-    email = request.form.get("currentemail")
-    password = request.form.get("currentpassword")
-    username = request.form.get("currentusername")
 
-    newUsername = request.form.get("newusername")
-    confirmNewUsername = request.form.get("confirmnewusername")
+            ##Error checking
+            errors = []
+            #check for inputs for current email and current password
+            if currentEmail == "":
+                error = "Please enter your current email."
+                errors.append(error)
+    
+            if currentPassword == "":
+                error = "Please enter your current password."
+                errors.append(error)
 
-    newEmail = request.form.get("newemail")
-    confirmNewEmail = request.form.get("confirmnewemail")
+            # checks database for email matching current user.
+            if currentEmail and currentEmail != emailInDatabase: 
+                error = "Incorrect email! Please try again."
+                errors.append(error)
 
-    newPassword = request.form.get("newpassword")
-    confirmNewPassword = request.form.get("confirmnewpassword")
+            # checks database for password matching current user.
+            if currentPassword and currentPassword != passwordInDatabase:
+                error = "Incorrect password! Please try again."
+                errors.append(error)
 
-    user = User.query.filter_by(id=user_id).first()
-    passwordInDatabase = user.password
-    emailInDatabase = user.email
-    userNameInDatabase = user.userName
+            # makes sure new email matches.
+            if newEmail and newEmail != confirmNewEmail:
+                error = "Your new email inputs do not match. Please try again."
+                errors.append(error)
 
-    userNameCheck = User.query.filter_by(userName=newUsername).first()
-    # print(userNameCheck)
-    # checks database for email matching current user.
-    if email != emailInDatabase: 
-        error = "incorrect email"
-        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error) 
-    # checks database for password matching current user.
-    if password != passwordInDatabase:
-        error = "incorrect password"
-        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error)
-    # checks database for username matching current user.
-    if username != userNameInDatabase:
-        error = "incorrect username"
-        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error)
-    # makes sure new email matches.
-    if newEmail and newEmail != confirmNewEmail:
-        error = "new email inputs do not match"
-        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error)
-    # makes sure new username matches.
-    if newUsername and newUsername != confirmNewUsername:
-        error = "new Username inputs do not match"
-        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error)
-    # makes sure new password matches and meet requirements.
-    if newPassword and newPassword != confirmNewPassword and passwordValidation(newPassword)== False:
-        error = "new password inputs do not match or meet password requirements"
-        return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, error=error)
+            # makes sure new password matches and meet requirements.
+            if newPassword and newPassword != confirmNewPassword and passwordValidation(newPassword)== False:
+                error = "Your new password inputs do not match and/or do not meet password requirements."
+                errors.append(error)
+            
+            if (len(errors) > 0):
+                return render_template('editAccount.html', user=user, user_id=user_id, artworks=artworks, currentUser=user, errors=errors)
 
-    if newUsername and userNameCheck is None:
-        user.userName = newUsername
+            else:
+                if newEmail:
+                    user.email = newEmail
+                    update = True
 
-        # setting up client
-        # client = boto3.client(
-        #     's3',
-        #     aws_access_key_id = ACCESS_KEY,
-        #     aws_secret_access_key = SECRET_KEY ,
-        #     region_name=AWS_REGION
-        #     )
+                if newPassword:
+                    user.password = newPassword
+                    update = True
 
-        # transferring profile photo to new userName
+                db.session.commit()
 
-        # Saving profile photo
-        response = requests.get(user.profilePhotoLink)
-        url_parts = user.profilePhotoLink.split("/")
-        filename = url_parts[-1]
-
-        with open(filename, 'wb') as f:
-            f.write(response.content)
-
-        # uploading profile photo
-        client.upload_file(filename,"artvisionbucket", "profilephoto/" + user.userName + "/" + filename)
-        
-        bucket_name = "artvisionbucket"
-        s3_key = "profilephoto/" + user.userName + "/" + filename
-        url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
-        user.profilePhotoLink = url
-        client.delete_object(Bucket="artvisionbucket", Key="profilephoto/" + username +"/"+ filename)
-        os.remove(filename)
-
-        for artwork in artworks:
-            url = artwork.url
-            url_parts = url.split("/")
-
-            url_parts[4] = newUsername
-            newUrl = "/".join(url_parts)
-            artwork.url = newUrl
-
-            response = requests.get(url)
-            filename = url_parts[-1]
-
-            with open(filename, 'wb') as f:
-                f.write(response.content)
-
-            client.upload_file(filename,"artvisionbucket", "artgallery/" + user.userName + "/" + filename)
-            bucket_name = "artvisionbucket"
-            s3_key = "artgallery/" + user.userName + "/" + filename
-            url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
-            client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + username +"/"+ filename)
-            os.remove(filename)
-            update = True
-
-    if newEmail:
-        user.email = newEmail
-        update = True
-    if newPassword:
-        user.password = newPassword
-        update = True
     if update == True:
         message = "Information updated"
     if update == False:

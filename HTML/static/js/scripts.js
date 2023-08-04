@@ -2,27 +2,35 @@ $(document).ready(function() {
     doSlideshow();
 });
 
+var slideshowImages = all_art //these are urls
+
 var images = all_art;
+
 var nextImageIndex = 0;
 var currentImageIndex = -1;
 
-console.log(images.length);
-for (var index in images) {
-    console.log(images[index]);
-}
+console.log(slideshowImages.length);
+// for (var index in images) {
+//     console.log(images[index]);
+// }
 
-var all_art = all_art_objects;
-var length = all_art.length
-for (var index=0; index<length; index++){
+var all_artwork_info = all_art_objects; //art objects currently in database
+var all_users = all_user_objects;
+
+console.log("number of users", all_users.length);
+
+var numSlideshowImages = slideshowImages.length
+
+for (var index=0; index<numSlideshowImages; index++){
     console.log(all_art[index])
 }
 
 function doSlideshow() {
-    if (nextImageIndex >= images.length) {
+    if (nextImageIndex >= numSlideshowImages) {
         nextImageIndex = 0;
     }
     while (nextImageIndex == currentImageIndex) {
-        nextImageIndex = Math.floor(Math.random() * images.length);
+        nextImageIndex = Math.floor(Math.random() * numSlideshowImages);
     }
     currentImageIndex = nextImageIndex;
     var nextImage = images[nextImageIndex++];
@@ -31,29 +39,36 @@ function doSlideshow() {
     //$("#background").removeClass('fadeIn').addClass('fadeOut');
     setTimeout(function() {
         $('#background').css('background-image', 'url("' + nextImage + '")');
-        for (var index=0; index<length; index++){
-            if ((all_art[index]['url']) == nextImage) {
-                if (all_art[index]['title'] != null) {
-                    document.getElementById("artwork_title").innerHTML=all_art[index]['title']
+        for (var index=0; index<numSlideshowImages; index++){
+            if ((all_artwork_info[index]['url']) == nextImage) {
+                if (all_artwork_info[index]['title'] != null) {
+                    document.getElementById("artwork_title").innerHTML=all_artwork_info[index]['title']
+                } else {
+                    document.getElementById("artwork_title").innerHTML="Untitled"
                 }
     
-                if (all_art[index]['artist'] != null) {
-                    document.getElementById("artwork_artist").innerHTML=all_art[index]['artist']
+                if (all_artwork_info[index]['artist'] != null) {
+                    document.getElementById("artwork_artist").innerHTML=all_artwork_info[index]['artist']
+
+                    var artist = all_artwork_info[index]['artist']
+                    console.log(artist)
+                    
+                    for (var newIndex=0; newIndex<all_users.length; newIndex++) {
+                        if ((all_users[newIndex]['profilePhotoLink'] != null) && (artist == all_users[newIndex]['userName'])) {
+                            document.getElementById("artwork_pfp").src = all_users[newIndex]['profilePhotoLink']
+                        }
+
+                        if (all_users[newIndex]['profilePhotoLink'] == null) {
+                            document.getElementById("artwork_pfp").src="{{ url_for('static', filename='img/ArtVision_Logo.svg')}}"
+                        }
+                    }
+                } else {
+                    document.getElementById("artwork_artist").innerHTML="ArtVision Member"
+                    document.getElementById("artwork_pfp").src ="{{url_for('static', filename='img/ArtVision_Logo.svg')}}"
                 }
-                //changePfp(document.getElementById("artwork_pfp"),"new_url")
-                //https://stackoverflow.com/questions/7312553/change-image-source-with-javascript
             }
         }   
         //$("#background").removeClass('fadeOut').addClass('fadeIn');
         setTimeout(doSlideshow, 5000);
     }, 1000);
-}
-
-function changePfp(domImage, srcImage) {
-    var img = new Image();
-    img.onload = function()
-    {
-        domImg.src = this.src;
-    };
-    img.src = srcImage;
 }
