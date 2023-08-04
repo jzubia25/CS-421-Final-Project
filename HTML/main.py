@@ -409,18 +409,24 @@ def add():
 
 @app.route('/user/<int:user_id>')
 def userProfile(user_id): 
-    if 'user_id' in session and session['user_id'] == user_id: # 1st person profile visit
+    if session['logged_in'] == True and 'user_id' in session and session['user_id'] == user_id: # 1st person profile visit
         user = User.query.get(user_id)
         artworks = Artwork.query.filter_by(user_id=user_id).all()
         
         return render_template ('userProfile.html', user=user, currentUser=user, isUsersProfile=True, artworks=artworks)
 
-    # elif success and 'user_id' not in session:
-    else: # 3rd person profile visit
+    elif session['logged_in'] == True and 'user_id' not in session:
+        # 3rd person profile visit
         currentUser = User.query.get(session['user_id'])
         user = User.query.get(user_id)
         artworks = Artwork.query.filter_by(user_id=user_id).all()
 
+        return render_template('userProfile.html', user=user, currentUser=currentUser, isUsersProfile=False, artworks=artworks)    
+
+    elif session['logged_in'] == False:
+        currentUser=None
+        user = User.query.get(user_id)
+        artworks = Artwork.query.filter_by(user_id=user_id).all()
         return render_template('userProfile.html', user=user, currentUser=currentUser, isUsersProfile=False, artworks=artworks)    
 
     # else:
