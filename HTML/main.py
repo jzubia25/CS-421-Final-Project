@@ -264,7 +264,7 @@ class Transaction(db.Model):
     amount = db.Column(db.Float, nullable=False)
     shipping_address = db.Column(db.Text)
 
-    def __init__(self, buyer_name, seller_name, artwork_name, amount, shipping_address=None):
+    def __init__(self, buyer_name, amount, shipping_address=None):
         self.buyer_name = buyer_name
         self.amount = amount
         self.shipping_address = shipping_address
@@ -555,9 +555,8 @@ def thankyou():
     user_id = session['user_id']
     if 'cart' in session and session['cart']:
         user = User.query.get(user_id)
-
         # Calculate the total amount from the cart
-        total_amount = calculate_total_amount()
+        total_amount = calculateCartTotal(session['cart'])
         shipping_address = request.form.get('address') + ', ' + \
                            request.form.get('city') + ', ' + \
                            request.form.get('state') + ', ' + \

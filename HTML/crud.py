@@ -1,4 +1,4 @@
-from main import app, db, User, Artwork
+from main import app, db, User, Artwork, Transaction
 import os
 import boto3
 
@@ -119,18 +119,24 @@ with app.app_context():
         print(user.userName)
         print(user.email)
 
-    userNameCheck = User.query.filter_by(userName="Ambition2015").first()
-    if userNameCheck:
-        userNameCheck.userName = "Ambition0516"
-        artworks = Artwork.query.filter_by(user_id=1).all()
-        for artwork in artworks:
-            url = artwork.url
-            url_parts = url.split("/")
+    # userNameCheck = User.query.filter_by(userName="Ambition2015").first()
+    # if userNameCheck:
+    #     userNameCheck.userName = "Ambition0516"
+    #     artworks = Artwork.query.filter_by(user_id=1).all()
+    #     for artwork in artworks:
+    #         url = artwork.url
+    #         url_parts = url.split("/")
 
-            url_parts[4] = "Ambition0516"
-            newUrl = "/".join(url_parts)
-            artwork.url = newUrl
-        db.session.commit()
+    #         url_parts[4] = "Ambition0516"
+    #         newUrl = "/".join(url_parts)
+    #         artwork.url = newUrl
+    #     db.session.commit()
+
+    all_transactions = Transaction.query.all()
+    for i in all_transactions:
+        print(i.shipping_address)
+        # db.session.delete(i)
+        # db.session.commit()
     # List all Art
     # all_Art = Artwork.query.all()
     # for art in all_Art:
