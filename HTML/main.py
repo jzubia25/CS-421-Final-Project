@@ -255,6 +255,23 @@ class Comment(db.Model):
     def __repr__(self):
         return f"<Comment {self.text}>"
 
+
+class Transaction(db.Model):
+    __tablename__ = "transactions"
+    id = db.Column(db.Integer, primary_key=True)
+    transaction_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    buyer_name = db.Column(db.Text, nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    shipping_address = db.Column(db.Text)
+
+    def __init__(self, buyer_name, seller_name, artwork_name, amount, shipping_address=None):
+        self.buyer_name = buyer_name
+        self.amount = amount
+        self.shipping_address = shipping_address
+
+    def __repr__(self):
+        return f"<Transaction {self.id}>"
+
 with app.app_context():
     # Create the tables (if not already created)
     db.create_all()
@@ -533,15 +550,32 @@ def purchasePage(user_id):
     total = calculateCartTotal(session['cart'])
     return render_template('purchase.html', user=user, user_id=user_id, currentUser=user, cart=session['cart'], total=total)
 
-@app.route ('/thankyou', methods = ["POST"])
+@app.route("/thankyou", methods=["POST"])
 def thankyou():
     user_id = session['user_id']
     if 'cart' in session and session['cart']:
         user = User.query.get(user_id)
-        session['cart'] = {} #empty cart
+
+        # Calculate the total amount from the cart
+        total_amount = calculate_total_amount()
+
+        # Create a new transaction record in the database
+        transaction = Transaction(
+            buyer_name=user.name,
+            amount=total_amount,
+            shipping_address="Shipping Address",  # Replace "Shipping Address" with the actual shipping address
+        )
+
+        # Save the transaction to the database
+        db.session.add(transaction)
+        db.session.commit()
+
+        # Clear the cart after the successful purchase
+        session['cart'] = {}
+
         message = "Thank you for your order"
         return render_template('thankyou.html', message=message, currentUser=user, user=user)
-  
+
     return redirect(url_for('purchasePage', user_id=user_id))
 
 
