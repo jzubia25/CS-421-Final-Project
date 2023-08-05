@@ -81,24 +81,6 @@ def delete_photo_from_s3(photo_url):
     file_name_parts = file_name.split("?")
     fileName = file_name_parts[0]
 
-    # print("User name:", userName)
-    # print("File name:", fileName)
-  
-    # Create a Boto3 client for S3
-    # client = boto3.client(
-    #     's3',
-    #     aws_access_key_id=ACCESS_KEY,
-    #     aws_secret_access_key=SECRET_KEY,
-    #     region_name=AWS_REGION
-    # )
-
-    # s3 = boto3.resource(        
-    #     's3',
-    #     aws_access_key_id=ACCESS_KEY,
-    #     aws_secret_access_key=SECRET_KEY,
-    #     region_name=AWS_REGION
-    # )
-    # Currently not working!!!
     try:
         client.delete_object(Bucket="artvisionbucket", Key="profilephoto/"+ userName + "/" +fileName)
         # s3.Object("artvisionbucket", "profilephoto/" + filename).delete()
@@ -118,13 +100,6 @@ def delete_artwork_from_s3(artwork_url):
     file_name = url_parts[-1]
     file_name_parts = file_name.split("?")
     fileName = file_name_parts[0]
-    # Create a Boto3 client for S3
-    # client = boto3.client(
-    #     's3',
-    #     aws_access_key_id=ACCESS_KEY,
-    #     aws_secret_access_key=SECRET_KEY,
-    #     region_name=AWS_REGION
-    # )
 
     try:
         client.delete_object(Bucket="artvisionbucket", Key="artgallery/" + userName +"/"+ fileName)
@@ -276,9 +251,6 @@ with app.app_context():
     # Create the tables (if not already created)
     db.create_all()
 
-# success = False # Login variable
-
-
 @app.route('/')
 def index():
     
@@ -399,26 +371,11 @@ def add():
     if password != confirmpassword:
         error = "Passwords do not match."
         return render_template('register.html', error=error, all_art=all_art, all_art_objects=all_art_objects, all_user_objects=all_user_objects)
-    
-    # if ' ' in filename:
-    #     error = "photo name cannot contain a space."
-    #     return render_template('register.html', error=error)        
 
     f.save(secure_filename(filename))
 
-    # client = boto3.client(
-    #     's3',
-    #     aws_access_key_id = ACCESS_KEY,
-    #     aws_secret_access_key = SECRET_KEY ,
-    #     region_name=AWS_REGION
-    #     )
     client.upload_file(filename,"artvisionbucket", "profilephoto/"+ username + "/" +filename)
-    # presigned_url = client.generate_presigned_url("get_object",
-    #     Params={
-    #         "Bucket":"artvisionbucket",
-    #         "Key":"profilephoto/"+ username + "/" +filename
-    #     },
-    #    )
+
     bucket_name = "artvisionbucket"
     s3_key = "profilephoto/" + username + "/" + filename
     url = f"https://{bucket_name}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
@@ -430,8 +387,6 @@ def add():
     db.session.add(newUser)
     db.session.commit()
     return redirect('loginPage')
-    # return redirect("/")
-
 
 @app.route('/user/<int:user_id>')
 def userProfile(user_id): 
@@ -455,9 +410,6 @@ def userProfile(user_id):
         artworks = Artwork.query.filter_by(user_id=user_id).all()
         return render_template('userProfile.html', user=user, currentUser=currentUser, isUsersProfile=False, artworks=artworks)    
 
-    # else:
-    #     return redirect(url_for('error404'))
-    
 
 @app.route('/explore', methods=["GET", "POST"])
 def explore():
@@ -505,14 +457,13 @@ def artworkDetails(artwork_id):
     print(artwork_id)
     artist = User.query.get(artwork.user_id)
 
-    if 'user_id' not in session:  # add this line
-        # handle the case when the user is not logged in
-         user = None  # or whatever is appropriate in your case
-         userLoggedIn = False  # add this line
+    if 'user_id' not in session:  
+         user = None  
+         userLoggedIn = False  
 
     else:
         user = User.query.get(session['user_id'])
-        userLoggedIn = True   # add this line
+        userLoggedIn = True  
 
     comments = Comment.query.filter_by(artwork_id = artwork.id).all()
     commentsCount = db.session.execute(Comment.query.filter_by(artwork_id=artwork.id).statement.with_only_columns(func.count()).order_by(None)).scalar()
@@ -521,7 +472,7 @@ def artworkDetails(artwork_id):
         return render_template('error.html', message='Artwork not found.')
     
     if request.method == 'POST':
-        if user:  # add this line
+        if user:  
             text = request.form.get("text")
             newComment = Comment(artwork_id=artwork_id, text=text, author=user.userName, profile_pic=user.profilePhotoLink, author_id=user.id, timestamp=datetime.date.today())
 
@@ -599,21 +550,8 @@ def addArt(user_id):
     filename = f.filename.split("\\")[-1]
     f.save(secure_filename(filename))
 
-    # client = boto3.client(
-    #     's3',
-    #     aws_access_key_id= ACCESS_KEY,
-    #     aws_secret_access_key= SECRET_KEY,
-    #     region_name=AWS_REGION
-    # )
-
     # Upload the file to S3 bucket
     client.upload_file(filename, "artvisionbucket", "artgallery/" +str(user.userName)+"/"+ filename)
-    # presigned_url = client.generate_presigned_url("get_object",
-    #     Params={
-    #         "Bucket":"artvisionbucket",
-    #         "Key":"artgallery/" +str(user.userName)+"/"+ filename
-    #     },
-    #     )
 
     bucket_name = "artvisionbucket"
     s3_key = f"artgallery/{user.userName}/{filename}"
@@ -703,7 +641,6 @@ def deleteArt(user_id):
         return redirect(url_for('userProfile', user_id=user_id, currentUser=user))
     else:
         return (redirect(url_for('explore')))
-    # Need query to find and delete art from database
 
 @app.route("/admin")
 def admin_page():
@@ -825,14 +762,6 @@ def editAccount(user_id):
             currentUsername = user.userName
             if newUsername and userNameCheck is None:
                 user.userName = newUsername
-
-                # setting up client
-                # client = boto3.client(
-                #     's3',
-                #     aws_access_key_id = ACCESS_KEY,
-                #     aws_secret_access_key = SECRET_KEY ,
-                #     region_name=AWS_REGION
-                #     )
 
                 # transferring profile photo to new userName
 
