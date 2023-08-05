@@ -1,6 +1,10 @@
 # CS-421-Final-Project
 ArtVision: A Collaborative E-Commerce Art Gallery Platform. Our team is developing an interactive and user-friendly art gallery website where art enthusiasts can share, discover, and purchase artwork. The platform leverages modern technologies for both front-end (HTML/CSS, JavaScript, React) and back-end development (Python/Django, PostgreSQL).
 
+# REQUIREMENTS/HOW TO RUN
+All requirements are in requirements.txt file
+Our main.py is in our HTML folder. You must be in the HTML folder to run it.
+You may need to set up environment variables below by following step one.
 
 # ACCESS_KEY SECRET_KEY and AWS_REGION
 # PLEASE READ CAREFULLY
