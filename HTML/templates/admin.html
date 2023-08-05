@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Page</title>
-    <!-- Add your CSS file link here -->
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/registrationstyles.css') }}" />
 </head>
 <body>
-    <!-- Navbar (You can create a separate header file and include it on all pages) -->
     <header>
 
     </header>
@@ -24,7 +23,6 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Sign Up Date</th>                    
-                    <!-- Add more columns as needed -->
                 </tr>
             </thead>
             <tbody>
@@ -34,7 +32,6 @@
                     <td>{{ user.name }}</td>
                     <td>{{ user.email }}</td>
                     <td>{{ user.registrationDate }}</td>
-                    <!-- Add more columns as needed -->
                 </tr>
                 {% endfor %}
             </tbody>
@@ -48,7 +45,6 @@
                     <th>Title</th>
                     <th>Price</th>
                     <th>link</th>
-                    <!-- Add more columns as needed -->
                 </tr>
             </thead>
             <tbody>
@@ -58,11 +54,10 @@
                     <td>{{ artwork.title }}</td>
                     <td>{{ artwork.price }}</td>
                     <td>{{ artwork.url }}</td>
-                    <!-- Add more columns as needed -->
+
                 </tr>
                 {% endfor %}
-            </tbody>            <!-- Similar table structure for artworks -->
-
+            </tbody>
         </table>
 
         <h2>Comments</h2>
@@ -73,7 +68,6 @@
                     <th>Artwork</th>
                     <th>Author</th>
                     <th>Time</th>
-                    <!-- Add more columns as needed -->
                 </tr>
             </thead>
             <tbody>
@@ -83,7 +77,6 @@
                     <td>{{ comment.artwork_id }}</td>
                     <td>{{ comment.author }}</td>
                     <td>{{ comment.timestamp }}</td>
-                    <!-- Add more columns as needed -->
                 </tr>
                 {% endfor %}
             </tbody>
@@ -97,7 +90,6 @@
                     <th>Date</th>
                     <th>Buyer</th>
                     <th>Amount</th>
-                    <!-- Add more columns as needed -->
                 </tr>
             </thead>
             <tbody>
@@ -107,7 +99,6 @@
                     <td>{{ transaction.transaction_date }}</td>
                     <td>{{ transaction.buyer_name }}</td>
                     <td>{{ transaction.amount }}</td>
-                    <!-- Add more columns as needed -->
                 </tr>
                 {% endfor %}
             </tbody>
@@ -115,7 +106,6 @@
     </div>
 
 
-    <!-- Add your JavaScript file link here if needed -->
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </body>
 </html>
