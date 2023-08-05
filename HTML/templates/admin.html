@@ -3,41 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaction Log</title>
+    <title>Admin Page</title>
     <!-- Add your CSS file link here -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/registrationstyles.css') }}" />
 </head>
 <body>
+    <!-- Navbar (You can create a separate header file and include it on all pages) -->
     <header>
+
     </header>
 
-    <div class="transaction-log">
-        <h1>Transaction Log</h1>
+
+    <div class="admin-page">
+        <h1>Admin Page</h1>
+        <h2>Users</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Sign Up Date</th>                    
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.registrationDate }}</td>
+                    <!-- Add more columns as needed -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Artworks</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>link</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for artwork in artworks %}
+                <tr>
+                    <td>{{ artwork.id }}</td>
+                    <td>{{ artwork.title }}</td>
+                    <td>{{ artwork.price }}</td>
+                    <td>{{ artwork.url }}</td>
+                    <!-- Add more columns as needed -->
+                </tr>
+                {% endfor %}
+            </tbody>            <!-- Similar table structure for artworks -->
+
+        </table>
+
+        <h2>Comments</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Artwork</th>
+                    <th>Author</th>
+                    <th>Time</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in Comments %}
+                <tr>
+                    <td>{{ comment.id }}</td>
+                    <td>{{ comment.artwork_id }}</td>
+                    <td>{{ comment.author }}</td>
+                    <td>{{ comment.timestamp }}</td>
+                    <!-- Add more columns as needed -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Transactions</h2>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Date</th>
-                    <th>Buyer Name</th>
-                    <th>Seller Name</th>
+                    <th>Buyer</th>
                     <th>Amount</th>
-                    <th>Shipping Address</th>
+                    <!-- Add more columns as needed -->
                 </tr>
             </thead>
             <tbody>
-                {% for transaction in transactions %}
+                {% for transaction in Transactions %}
                 <tr>
                     <td>{{ transaction.id }}</td>
-                    <td>{{ transaction.transaction_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ transaction.transaction_date }}</td>
                     <td>{{ transaction.buyer_name }}</td>
-                    <td>{{ transaction.seller_name }}</td>
-                    <td>${{ "%.2f"|format(transaction.amount) }}</td>
-                    <td>{{ transaction.shipping_address }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <!-- Add more columns as needed -->
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
 
     <!-- Add your JavaScript file link here if needed -->
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>

@@ -705,6 +705,16 @@ def deleteArt(user_id):
         return (redirect(url_for('explore')))
     # Need query to find and delete art from database
 
+@app.route("/admin")
+def admin_page():
+    # Fetch data from all the tables
+    users = User.query.all()
+    artworks = Artwork.query.all()
+    comments = Comment.query.all()
+    transactions = Transaction.query.all()
+
+    return render_template("admin.html", users=users, artworks=artworks, comments=comments, transactions=transactions)
+
 
 @app.route('/error404')
 def error404():
