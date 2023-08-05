@@ -132,11 +132,11 @@ with app.app_context():
     #         artwork.url = newUrl
     #     db.session.commit()
 
-    all_transactions = Transaction.query.all()
-    for i in all_transactions:
-        print(i.shipping_address)
-        # db.session.delete(i)
-        # db.session.commit()
+    # all_transactions = Transaction.query.all()
+    # for i in all_transactions:
+    #     print(i.shipping_address)
+    #     db.session.delete(i)
+    #     db.session.commit()
     # List all Art
     # all_Art = Artwork.query.all()
     # for art in all_Art:

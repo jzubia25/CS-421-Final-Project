@@ -73,7 +73,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for comment in Comments %}
+                {% for comment in comments %}
                 <tr>
                     <td>{{ comment.id }}</td>
                     <td>{{ comment.artwork_id }}</td>
@@ -95,7 +95,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for transaction in Transactions %}
+                {% for transaction in transactions %}
                 <tr>
                     <td>{{ transaction.id }}</td>
                     <td>{{ transaction.transaction_date }}</td>
