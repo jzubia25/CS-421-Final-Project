@@ -558,12 +558,17 @@ def thankyou():
 
         # Calculate the total amount from the cart
         total_amount = calculate_total_amount()
+        shipping_address = request.form.get('address') + ', ' + \
+                           request.form.get('city') + ', ' + \
+                           request.form.get('state') + ', ' + \
+                           request.form.get('country') + ', ' + \
+                           request.form.get('zip-code')
 
         # Create a new transaction record in the database
         transaction = Transaction(
             buyer_name=user.name,
             amount=total_amount,
-            shipping_address="Shipping Address",  # Replace "Shipping Address" with the actual shipping address
+            shipping_address=shipping_address,
         )
 
         # Save the transaction to the database
